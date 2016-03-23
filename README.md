@@ -86,10 +86,10 @@ Run `make bench` to run them:
 ```
 LuaJIT 2.1.0-beta1
 1e+06 uuids generated
-1. FFI binding	took:	0.103862ms
-2. C binding	took:	0.224119ms
-3. Pure LuaJIT	took:	0.792812ms
-4. Pure Lua	took:	2.139352ms
+1. FFI binding	took:	0.103862s
+2. C binding	took:	0.224119s
+3. Pure LuaJIT	took:	0.792812s
+4. Pure Lua	took:	2.139352s
 ```
 
 * FFI binding: <https://github.com/bungle/lua-resty-uuid>

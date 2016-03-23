@@ -35,5 +35,5 @@ table.sort(res, function(a, b) return a.time < b.time end)
 print(jit.version)
 print(string.format("%g uuids generated", n_uuids))
 for i, result in ipairs(res) do
-  print(string.format("%d. %s\ttook:\t%fms", i, result.module, result.time))
+  print(string.format("%d. %s\ttook:\t%fs", i, result.module, result.time))
 end
