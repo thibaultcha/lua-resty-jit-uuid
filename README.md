@@ -1,5 +1,8 @@
 # lua-resty-jit-uuid
 
+[![Module Version][badge-version-image]][luarocks-resty-jit-uuid]
+[![Build Status][badge-travis-image]][badge-travis-url]
+
 A pure LuaJIT (no dependencies) uuid generator tuned for performance.
 
 ### Table of Contents
@@ -101,3 +104,9 @@ Pure LuaJIT: this module
 Work licensed under the MIT License.
 
 [Back to TOC](#table-of-contents)
+
+[luarocks-resty-jit-uuid]: http://luarocks.org/modules/thibaultcha/lua-resty-jit-uuid
+
+[badge-travis-url]: https://travis-ci.org/thibaultCha/lua-resty-jit-uuid
+[badge-travis-image]: https://travis-ci.org/thibaultCha/lua-resty-jit-uuid?branch=master
+[badge-version-image]: https://img.shields.io/badge/version-0.0.1-blue.svg?style=flat

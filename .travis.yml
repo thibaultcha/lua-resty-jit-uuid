@@ -19,6 +19,9 @@ before_install:
   - bash .ci/setup_openresty.sh
   - pip install --user hererocks
   - hererocks lua_install -r^ -l 5.1
+  - export PATH=$PATH:$PWD/lua_install/bin:$OPENRESTY_DIR/nginx/sbin
+  - eval `luarocks path`
+  - luarocks install luacheck
 install:
   - luarocks make
 script: make lint && make test
