@@ -92,10 +92,10 @@ LuaJIT 2.1.0-beta1
 4. Pure Lua	took:	2.139352ms
 ```
 
-FFI binding: <https://github.com/bungle/lua-resty-uuid>
-C binding: <https://github.com/Mashape/lua-uuid>
-Pure Lua: <https://github.com/Tieske/uuid>
-Pure LuaJIT: this module
+* FFI binding: <https://github.com/bungle/lua-resty-uuid>
+* C binding: <https://github.com/Mashape/lua-uuid>
+* Pure Lua: <https://github.com/Tieske/uuid>
+* Pure LuaJIT: this module
 
 [Back to TOC](#table-of-contents)
 
