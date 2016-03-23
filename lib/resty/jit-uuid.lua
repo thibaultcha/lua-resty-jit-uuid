@@ -1,3 +1,10 @@
+--- jit-uuid
+-- Fast and dependency-free uuid generation for LuaJIT.
+-- @module jit-uuid
+-- @author Thibault Charbonnier
+-- @license MIT
+-- @release 0.0.1
+
 local bit = require "bit"
 
 local concat = table.concat
@@ -7,10 +14,9 @@ local tohex = bit.tohex
 local band = bit.band
 local bor = bit.bor
 
-local _M = {}
-
-local buf = {0,0,0,0,"-",0,0,"-",0,0,"-",0,0,"-",0,0,0,0,0,0}
-local buf_len = #buf
+local _M = {
+  _VERSION = "0.0.1"
+}
 
 function _M.seed()
   if ngx then
@@ -22,6 +28,12 @@ function _M.seed()
   end
 end
 
+local buf = {0,0,0,0,"-",0,0,"-",0,0,"-",0,0,"-",0,0,0,0,0,0}
+local buf_len = #buf
+
+--- Generate a v4 uuid.
+-- All steps have been carefully benchmarked to ensure the best performance.
+-- @treturn string `uuid`: a v4 (randomly generated) uuid.
 local function generate()
   for i = 1, buf_len do
     if i ~= 9 and i ~= 12 then
