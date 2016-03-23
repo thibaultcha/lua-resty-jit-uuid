@@ -4,7 +4,7 @@ test:
 	@prove
 
 lint:
-	@luacheck -q lib --std 'luajit'
+	@luacheck -q lib --std 'luajit+ngx_lua'
 
 bench:
 	@luarocks install uuid
