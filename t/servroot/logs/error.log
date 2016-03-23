@@ -1,0 +1,28 @@
+2016/03/22 18:20:52 [notice] 13433#0: using the "kqueue" event method
+2016/03/22 18:20:52 [notice] 13433#0: openresty/1.9.7.3
+2016/03/22 18:20:52 [notice] 13433#0: built by clang 7.0.2 (clang-700.1.81)
+2016/03/22 18:20:52 [notice] 13433#0: OS: Darwin 15.3.0
+2016/03/22 18:20:52 [notice] 13433#0: hw.ncpu: 8
+2016/03/22 18:20:52 [notice] 13433#0: net.inet.tcp.sendspace: 131072
+2016/03/22 18:20:52 [notice] 13433#0: kern.ipc.somaxconn: 128
+2016/03/22 18:20:52 [notice] 13433#0: getrlimit(RLIMIT_NOFILE): 2560:9223372036854775807
+2016/03/22 18:20:52 [notice] 13434#0: start worker processes
+2016/03/22 18:20:52 [notice] 13434#0: start worker process 13435
+2016/03/22 18:20:52 [notice] 13434#0: start worker process 13436
+2016/03/22 18:20:52 [error] 13436#0: init_worker_by_lua error: init_worker_by_lua:6: exists
+stack traceback:
+	[C]: in function 'assert'
+	init_worker_by_lua:6: in main chunk
+2016/03/22 18:20:52 [notice] 13434#0: signal 23 (SIGIO) received
+2016/03/22 18:20:52 [notice] 13434#0: signal 3 (SIGQUIT) received, shutting down
+2016/03/22 18:20:52 [notice] 13435#0: gracefully shutting down
+2016/03/22 18:20:52 [notice] 13435#0: exiting
+2016/03/22 18:20:52 [notice] 13436#0: gracefully shutting down
+2016/03/22 18:20:52 [notice] 13434#0: signal 23 (SIGIO) received
+2016/03/22 18:20:52 [notice] 13436#0: exiting
+2016/03/22 18:20:52 [notice] 13435#0: exit
+2016/03/22 18:20:52 [notice] 13436#0: exit
+2016/03/22 18:20:52 [notice] 13434#0: signal 20 (SIGCHLD) received
+2016/03/22 18:20:52 [notice] 13434#0: worker process 13436 exited with code 0
+2016/03/22 18:20:52 [notice] 13434#0: worker process 13435 exited with code 0
+2016/03/22 18:20:52 [notice] 13434#0: exit
