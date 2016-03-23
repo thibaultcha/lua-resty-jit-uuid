@@ -8,7 +8,7 @@ package.path = "lib/?.lua;"..package.path
 local cuuid = require "lua_uuid" -- C binding
 local lua_uuid = require "uuid" -- pure Lua
 local ffi_uuid = require "resty.uuid" -- FFI binding
-local luajit_uuid = require "resty.pure-uuid" -- Pure LuaJIT
+local luajit_uuid = require "resty.jit-uuid" -- Pure LuaJIT
 
 math.randomseed(os.time())
 

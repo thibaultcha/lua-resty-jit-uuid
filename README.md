@@ -1,4 +1,4 @@
-# lua-resty-pure-uuid
+# lua-resty-jit-uuid
 
 A pure LuaJIT (no dependencies) uuid generator tuned for performance.
 
@@ -28,7 +28,7 @@ libraries for Lua/LuaJIT.
 
 LuaJIT:
 ```lua
-local uuid = require "resty.pure-uuid"
+local uuid = require "resty.jit-uuid"
 
 uuid.seed()     -- automatic seeding with os.time(), LuaSocket, or ngx.time()
 
@@ -40,14 +40,14 @@ OpenResty:
 ```nginx
 http {
     init_worker_by_lua_block {
-        local uuid = require "resty.pure-uuid"
+        local uuid = require "resty.jit-uuid"
         uuid.seed() -- Very important!
     }
 
     server {
         location / {
             content_by_lua_block {
-                local uuid = require "resty.pure-uuid"
+                local uuid = require "resty.jit-uuid"
                 ngx.say(uuid())
             }
         }
@@ -66,7 +66,7 @@ application.
 
 This module can be installed through Luarocks:
 ```bash
-$ luarocks install lua-resty-pure-uuid
+$ luarocks install lua-resty-jit-uuid
 ```
 
 Or can be manually copied in your `LUA_PATH`.

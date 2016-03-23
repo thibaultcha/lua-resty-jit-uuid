@@ -22,7 +22,7 @@ qq{
 --- config
     location /t {
         content_by_lua_block {
-            local uuid = require "resty.pure-uuid"
+            local uuid = require "resty.jit-uuid"
 
             local u = uuid.generate()
             ngx.say(u)
@@ -43,7 +43,7 @@ qq{
     lua_package_path '$::LuaPackagePath';
     lua_shared_dict uuids 1m;
     init_worker_by_lua_block {
-        local uuid = require "resty.pure-uuid"
+        local uuid = require "resty.jit-uuid"
         local dict = ngx.shared.uuids
 
         local u = uuid.generate()
@@ -69,7 +69,7 @@ qq{
     lua_package_path '$::LuaPackagePath';
     lua_shared_dict uuids 1m;
     init_worker_by_lua_block {
-        local uuid = require "resty.pure-uuid"
+        local uuid = require "resty.jit-uuid"
         local dict = ngx.shared.uuids
         uuid.seed()
 
@@ -98,7 +98,7 @@ qq{
 --- config
     location /t {
         content_by_lua_block {
-            local uuid = require "resty.pure-uuid"
+            local uuid = require "resty.jit-uuid"
             ngx.say(uuid())
         }
     }
