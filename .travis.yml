@@ -1,0 +1,30 @@
+language: perl
+perl: 5.18
+sudo: false
+notifications:
+  email: false
+addons:
+  apt:
+    packages:
+      - libreadline-dev
+      - libncurses5-dev
+      - libpcre3-dev
+      - libssl-dev
+      - build-essential
+env:
+  global:
+    - OPENRESTY=1.9.7.4
+    - OPENRESTY_DIR=$HOME/openresty
+before_install:
+  - bash .ci/setup_openresty.sh
+  - pip install --user hererocks
+  - hererocks lua_install -r^ -l 5.1
+install:
+  - luarocks make
+script: make lint && make test
+cache:
+  cpan: true
+  apt: true
+  pip: true
+  directories:
+    - $OPENRESTY_DIR
