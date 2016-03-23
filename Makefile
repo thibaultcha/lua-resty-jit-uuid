@@ -1,5 +1,8 @@
 .PHONY: test lint bench
 
+test:
+	@prove
+
 lint:
 	@luacheck -q lib --std 'luajit'
 
