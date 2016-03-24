@@ -1,5 +1,5 @@
 --- jit-uuid
--- Fast and dependency-free uuid generation for LuaJIT.
+-- Fast and dependency-free uuid generation for OpenResty/LuaJIT.
 -- @module jit-uuid
 -- @author Thibault Charbonnier
 -- @license MIT
@@ -33,16 +33,21 @@ local buf = {0,0,0,0,'-',0,0,'-',0,0,'-',0,0,'-',0,0,0,0,0,0}
 local buf_len = #buf
 
 --- Generate a v4 uuid.
--- All steps have been carefully benchmarked to ensure the best performance.
+-- @function generate
 -- @treturn string `uuid`: a v4 (randomly generated) uuid.
+-- @usage
+-- local uuid = require "resty.jit-uuid"
+--
+-- local u1 = uuid() -- metatable
+-- local u2 = uuid.generate()
 local function generate()
   for i = 1, buf_len do
-    if i ~= 9 and i ~= 12 then
+    if i ~= 9 and i ~= 12 then -- benchmarked
       buf[i] = tohex(random(0, 255), 2)
     end
   end
 
-  buf[5], buf[8], buf[11], buf[14] = '-', '-', '-', '-'
+  buf[5], buf[8], buf[11], buf[14] = '-', '-', '-', '-' -- benchmarked
   buf[9] = tohex(bor(band(random(0, 255), 0x0F), 0x40), 2)
   buf[12] = tohex(bor(band(random(0, 255), 0x3F), 0x80), 2)
 
@@ -57,11 +62,19 @@ do
     local re_find = ngx.re.find
     local regex = '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
 
-    --- Validate v4 uuids
-    -- Only validates v4 uuids including dashes.
-    -- Use JIT PCRE if available in ngx_lua or fallbacks on Lua pattern.
+    --- Validate v4 uuids.
+    -- Only validates v4 uuids including dashes, version and variant.
+    -- Use JIT PCRE if available in OpenResty or fallbacks on Lua pattern.
     -- @param[type=string] str String to verify.
     -- @treturn boolean `valid`: true if v4 uuid, false otherwise.
+    -- @usage
+    -- local uuid = require "resty.jit-uuid"
+    --
+    -- uuid.is_valid "cbb297c0-a956-486d-ad1d-f9bZZZZZZZZZ" --> false
+    -- uuid.is_valid "cbb297c0-a956-586d-ad1d-f9b42df9465a" --> false (not v4)
+    -- uuid.is_valid "cbb297c0-a956-486d-dd1d-f9b42df9465a" --> false (invalid variant)
+    -- uuid.is_valid "cbb297c0a956486dad1df9b42df9465a"     --> false (no dashes)
+    -- uuid.is_valid "cbb297c0-a956-486d-ad1d-f9b42df9465a" --> true
     _M.is_valid = function(str)
       -- it has proven itself efficient to first check the length with an
       -- evenly distributed set of valid and invalid uuid lengths.

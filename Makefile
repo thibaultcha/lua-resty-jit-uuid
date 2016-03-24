@@ -1,4 +1,4 @@
-.PHONY: test lint bench
+.PHONY: test lint bench doc
 
 test:
 	@t/reindex t/*.t
@@ -12,3 +12,7 @@ bench:
 	@luarocks install lua-resty-uuid
 	@luarocks install lua_uuid
 	@luajit bench.lua
+
+doc:
+	@luarocks install ldoc
+	@ldoc -c doc/config.ld lib
