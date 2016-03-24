@@ -1,6 +1,7 @@
 .PHONY: test lint bench
 
 test:
+	@t/reindex t/*.t
 	@prove
 
 lint:

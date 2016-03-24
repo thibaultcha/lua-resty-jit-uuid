@@ -14,7 +14,28 @@ run_tests();
 
 __DATA__
 
-=== TEST 1: generate uuid
+=== TEST 1: _VERSION field
+--- http_config eval
+qq{
+    lua_package_path '$::LuaPackagePath';
+}
+--- config
+    location /t {
+        content_by_lua_block {
+            local uuid = require "resty.jit-uuid"
+            ngx.say(uuid._VERSION)
+        }
+    }
+--- request
+GET /t
+--- response_body_like
+[0-9]\.[0-9]\.[0-9]
+--- no_error_log
+[error]
+
+
+
+=== TEST 2: generate uuid
 --- http_config eval
 qq{
     lua_package_path '$::LuaPackagePath';
@@ -37,7 +58,7 @@ GET /t
 
 
 
-=== TEST 2: identical seed for each worker by default
+=== TEST 3: identical seed for each worker by default
 --- http_config eval
 qq{
     lua_package_path '$::LuaPackagePath';
@@ -63,7 +84,7 @@ exists
 
 
 
-=== TEST 3: random seeding for each worker
+=== TEST 4: random seeding for each worker
 --- http_config eval
 qq{
     lua_package_path '$::LuaPackagePath';
@@ -90,7 +111,7 @@ GET /t
 
 
 
-=== TEST 4: __call metamethod
+=== TEST 5: __call metamethod
 --- http_config eval
 qq{
     lua_package_path '$::LuaPackagePath';
