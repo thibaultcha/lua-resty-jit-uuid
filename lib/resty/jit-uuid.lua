@@ -40,7 +40,7 @@ local buf_len = #buf
 --
 -- local u1 = uuid() -- metatable
 -- local u2 = uuid.generate()
-local function generate()
+function _M.generate()
   for i = 1, buf_len do
     if i ~= 9 and i ~= 12 then -- benchmarked
       buf[i] = tohex(random(0, 255), 2)
@@ -53,8 +53,6 @@ local function generate()
 
   return concat(buf)
 end
-
-_M.generate = generate
 
 do
   local find = string.find
@@ -101,8 +99,6 @@ do
 end
 
 return setmetatable(_M, {
-  __call = function()
-    return generate()
-  end
+  __call = _M.generate
 })
 
