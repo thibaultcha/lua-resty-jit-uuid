@@ -10,6 +10,7 @@ A pure LuaJIT (no dependencies) uuid generator tuned for performance.
 * [Motivation](#motivation)
 * [Usage](#usage)
 * [Installation](#installation)
+* [Documentation](#documentation)
 * [Benchmarks](#benchmarks)
 * [License](#license)
 
@@ -20,7 +21,8 @@ the libuuid requirement of FFI and C bindings. Its goal is to provide **fast**
 uuid generation, **without dependencies** for OpenResty and LuaJIT.
 
 It is a good candidate if you want a more performant generation than pure Lua,
-without depending on libuuid.
+without depending on libuuid. It also provides very efficient uuid validation,
+using JIT PCRE if available in OpenResty, with a fallback on Lua patterns.
 
 See the [Benchmarks](#benchmarks) section for comparisons between other uuid
 libraries for Lua/LuaJIT.
@@ -33,10 +35,12 @@ LuaJIT:
 ```lua
 local uuid = require "resty.jit-uuid"
 
-uuid.seed()     -- automatic seeding with os.time(), LuaSocket, or ngx.time()
+uuid.seed()       -- automatic seeding with os.time(), LuaSocket, or ngx.time()
 
-uuid()          ---> uuid (with metatable lookup)
-uuid.generate() ---> uuid
+uuid()            ---> uuid (with metatable lookup)
+uuid.generate()   ---> uuid
+
+uuid.is_valid("") ---> true/false (automatic JIT PCRE or Lua patterns)
 ```
 
 OpenResty:
@@ -76,11 +80,22 @@ Or can be manually copied in your `LUA_PATH`.
 
 [Back to TOC](#table-of-contents)
 
+### Documentation
+
+Documentation is available online at
+<http://thibaultcha.github.io/lua-resty-jit-uuid/>.
+
 ### Benchmarks
 
-The `bench.lua` file provides benchmarks for several popular uuid libraries. As
-expected, C and FFI bindings are the fastest, but this module still provides a
-very reasonable performance at the cost of being free of dependencies.
+This module has been carefully benchmarked on each step of its implementation
+to ensure the best performance for OpenResty and plain LuaJIT. For example,
+uuid validation will use JIT PCRE over Lua patterns if available, to ensure the
+best performance.
+
+The `bench.lua` file provides benchmarks of uuid generation for several popular
+uuid libraries. As expected, C and FFI bindings are the fastest, but this
+module still provides a very reasonable performance at the cost of being free
+of dependencies.
 
 Run `make bench` to run them:
 ```
@@ -96,6 +111,9 @@ LuaJIT 2.1.0-beta1
 * C binding: <https://github.com/Mashape/lua-uuid>
 * Pure Lua: <https://github.com/Tieske/uuid>
 * Pure LuaJIT: this module
+
+Note: uuid validation is not benchmarked yet (all of those modules do not
+necessarily provide a way to validate uuids).
 
 [Back to TOC](#table-of-contents)
 
