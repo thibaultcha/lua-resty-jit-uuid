@@ -127,4 +127,5 @@ Work licensed under the MIT License.
 
 [badge-travis-url]: https://travis-ci.org/thibaultCha/lua-resty-jit-uuid
 [badge-travis-image]: https://travis-ci.org/thibaultCha/lua-resty-jit-uuid.svg?branch=master
-[badge-version-image]: https://img.shields.io/badge/version-0.0.1-blue.svg?style=flat
+[badge-version-image]: https://img.shields.io/badge/version-0.0.2-blue.svg?style=flat
+

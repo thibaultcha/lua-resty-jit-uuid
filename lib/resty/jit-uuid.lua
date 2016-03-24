@@ -3,7 +3,7 @@
 -- @module jit-uuid
 -- @author Thibault Charbonnier
 -- @license MIT
--- @release 0.0.1
+-- @release 0.0.2
 
 local bit = require 'bit'
 
@@ -16,7 +16,7 @@ local band = bit.band
 local bor = bit.bor
 
 local _M = {
-  _VERSION = '0.0.1'
+  _VERSION = '0.0.2'
 }
 
 function _M.seed()
@@ -105,3 +105,4 @@ return setmetatable(_M, {
     return generate()
   end
 })
+

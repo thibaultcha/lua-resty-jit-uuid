@@ -1,8 +1,8 @@
 package = "lua-resty-jit-uuid"
-version = "0.0.1-0"
+version = "0.0.2-0"
 source = {
   url = "https://github.com/thibaultCha/lua-resty-jit-uuid",
-  tag = "0.0.1"
+  tag = "0.0.2"
 }
 description = {
   summary = "Fast and dependency-free uuid generation for OpenResty/LuaJIT",
@@ -15,7 +15,7 @@ description = {
     without depending on libuuid. It also provides very efficient uuid validation,
     using JIT PCRE if available in OpenResty, with a fallback on Lua patterns.
   ]],
-  homepage = "https://github.com/thibaultCha/lua-resty-jit-uuid",
+  homepage = "http://thibaultcha.github.io/lua-resty-jit-uuid/",
   license = "MIT"
 }
 build = {
@@ -24,3 +24,4 @@ build = {
     ["resty.jit-uuid"] = "lib/resty/jit-uuid.lua"
   }
 }
+

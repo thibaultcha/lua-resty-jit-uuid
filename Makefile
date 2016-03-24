@@ -16,3 +16,4 @@ bench:
 doc:
 	@luarocks install ldoc
 	@ldoc -c doc/config.ld lib
+
