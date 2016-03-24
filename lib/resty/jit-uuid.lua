@@ -33,7 +33,6 @@ local buf = {0,0,0,0,'-',0,0,'-',0,0,'-',0,0,'-',0,0,0,0,0,0}
 local buf_len = #buf
 
 --- Generate a v4 uuid.
--- @function generate
 -- @treturn string `uuid`: a v4 (randomly generated) uuid.
 -- @usage
 -- local uuid = require "resty.jit-uuid"

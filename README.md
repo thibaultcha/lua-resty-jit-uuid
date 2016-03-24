@@ -85,6 +85,8 @@ Or can be manually copied in your `LUA_PATH`.
 Documentation is available online at
 <http://thibaultcha.github.io/lua-resty-jit-uuid/>.
 
+[Back to TOC](#table-of-contents)
+
 ### Benchmarks
 
 This module has been carefully benchmarked on each step of its implementation
