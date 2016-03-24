@@ -1,1 +1,3 @@
 t/servroot
+*.lua
+!bench.lua
