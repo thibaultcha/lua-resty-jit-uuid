@@ -5,30 +5,31 @@
 -- @license MIT
 -- @release 0.0.1
 
-local bit = require "bit"
+local bit = require 'bit'
 
-local concat = table.concat
 local randomseed = math.randomseed
+local concat = table.concat
 local random = math.random
+local match = string.match
 local tohex = bit.tohex
 local band = bit.band
 local bor = bit.bor
 
 local _M = {
-  _VERSION = "0.0.1"
+  _VERSION = '0.0.1'
 }
 
 function _M.seed()
   if ngx then
     randomseed(ngx.time() + ngx.worker.pid())
-  elseif package.loaded["socket"] and package.loaded["socket"].gettime then
-    randomseed(package.loaded["socket"].gettime()*10000)
+  elseif package.loaded['socket'] and package.loaded['socket'].gettime then
+    randomseed(package.loaded['socket'].gettime()*10000)
   else
     randomseed(os.time())
   end
 end
 
-local buf = {0,0,0,0,"-",0,0,"-",0,0,"-",0,0,"-",0,0,0,0,0,0}
+local buf = {0,0,0,0,'-',0,0,'-',0,0,'-',0,0,'-',0,0,0,0,0,0}
 local buf_len = #buf
 
 --- Generate a v4 uuid.
@@ -41,7 +42,7 @@ local function generate()
     end
   end
 
-  buf[5], buf[8], buf[11], buf[14] = "-", "-", "-", "-"
+  buf[5], buf[8], buf[11], buf[14] = '-', '-', '-', '-'
   buf[9] = tohex(bor(band(random(0, 255), 0x0F), 0x40), 2)
   buf[12] = tohex(bor(band(random(0, 255), 0x3F), 0x80), 2)
 
@@ -49,6 +50,42 @@ local function generate()
 end
 
 _M.generate = generate
+
+do
+  local find = string.find
+  if ngx and find(ngx.config.nginx_configure(),'--with-pcre-jit',nil,true) then
+    local re_find = ngx.re.find
+    local regex = '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+
+    --- Validate v4 uuids
+    -- Only validates v4 uuids including dashes.
+    -- Use JIT PCRE if available in ngx_lua or fallbacks on Lua pattern.
+    -- @param[type=string] str String to verify.
+    -- @treturn boolean `valid`: true if v4 uuid, false otherwise.
+    _M.is_valid = function(str)
+      -- it has proven itself efficient to first check the length with an
+      -- evenly distributed set of valid and invalid uuid lengths.
+      if #str ~= 36 then return false end
+      return re_find(str, regex, 'oj') ~= nil
+    end
+
+  else
+    local d = '[0-9a-f]'
+    local p = '^'..concat({
+                d:rep(8),
+                d:rep(4),
+           '4'..d:rep(3),
+      '[89ab]'..d:rep(3),
+                d:rep(12)
+    }, '%-')..'$'
+
+    _M.is_valid = function(str)
+      if #str ~= 36 then return false end
+      return match(str, p) ~= nil
+    end
+
+  end
+end
 
 return setmetatable(_M, {
   __call = function()
