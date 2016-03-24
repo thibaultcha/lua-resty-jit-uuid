@@ -100,20 +100,22 @@ of dependencies.
 Run `make bench` to run them:
 ```
 LuaJIT 2.1.0-beta1
-1e+06 uuids generated
-1. FFI binding	took:	0.103862s
-2. C binding	took:	0.224119s
-3. Pure LuaJIT	took:	0.792812s
-4. Pure Lua	took:	2.139352s
+UUID generation (1e+06 UUIDs)
+1. FFI binding took:   0.089645s
+2. C binding   took:   0.233015s
+3. Pure LuaJIT took:   0.719925s
+4. Pure Lua    took:   2.045098s
+
+UUID validation if provided (1e+06 UUIDs)
+1. Pure LuaJIT (JIT PCRE enabled) took:   0.280195s
+2. FFI binding                    took:   0.438504s
+3. Pure LuaJIT (Lua patterns)     took:   0.749306s
 ```
 
 * FFI binding: <https://github.com/bungle/lua-resty-uuid>
 * C binding: <https://github.com/Mashape/lua-uuid>
 * Pure Lua: <https://github.com/Tieske/uuid>
 * Pure LuaJIT: this module
-
-Note: uuid validation is not benchmarked yet (all of those modules do not
-necessarily provide a way to validate uuids).
 
 [Back to TOC](#table-of-contents)
 
