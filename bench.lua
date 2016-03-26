@@ -15,7 +15,6 @@ local lua_uuid = require "uuid"
 local ffi_uuid = require "resty.uuid"
 local luajit_uuid = require "resty.jit-uuid"
 
-local assert = assert
 math.randomseed(os.time())
 
 -------------
@@ -31,7 +30,7 @@ local tests = {
 local gen_res = {}
 for k, uuid in pairs(tests) do
   local tstart = os.clock()
-  for i = 1, n_uuids do
+  for _ = 1, n_uuids do
     uuid()
   end
   gen_res[#gen_res+1] = {module = k, time = os.clock() - tstart}
