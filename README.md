@@ -108,10 +108,10 @@ UUID generation (1e+06 UUIDs)
 3. Pure LuaJIT took:   0.719925s
 4. Pure Lua    took:   2.045098s
 
-UUID validation if provided (1e+06 UUIDs)
-1. Pure LuaJIT (JIT PCRE enabled) took:   0.280195s
-2. FFI binding                    took:   0.438504s
-3. Pure LuaJIT (Lua patterns)     took:   0.749306s
+UUID validation if provided (set of 70% valid, 30% invalid)
+1. Pure LuaJIT (JIT PCRE enabled) took:   0.245202s
+2. FFI binding                    took:   0.328822s
+3. Pure LuaJIT (Lua patterns)     took:   0.557272s
 ```
 
 * FFI binding: <https://github.com/bungle/lua-resty-uuid>

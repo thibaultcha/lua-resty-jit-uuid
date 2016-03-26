@@ -1,6 +1,12 @@
 if not jit then
-  error("must run in LuaJIT")
+  error("must run in LuaJIT or resty-cli")
 end
+
+-------------
+-- Settings
+-------------
+local n_uuids = 10^6
+local p_valid_uuids = 70
 
 package.path = "lib/?.lua;"..package.path
 
@@ -15,9 +21,6 @@ math.randomseed(os.time())
 -------------
 -- Generation
 -------------
-local res = {}
-local uuids = {}
-local n_uuids = 10^6
 local tests = {
   ["Pure Lua"] = lua_uuid.new,
   ["Pure LuaJIT"]= luajit_uuid.generate,
@@ -25,19 +28,20 @@ local tests = {
   ["FFI binding"] = ffi_uuid.generate_random
 }
 
+local gen_res = {}
 for k, uuid in pairs(tests) do
   local tstart = os.clock()
   for i = 1, n_uuids do
     uuid()
   end
-  res[#res+1] = {module = k, time = os.clock() - tstart}
+  gen_res[#gen_res+1] = {module = k, time = os.clock() - tstart}
 end
 
-table.sort(res, function(a, b) return a.time < b.time end)
+table.sort(gen_res, function(a, b) return a.time < b.time end)
 
 print(jit.version)
 print(string.format("UUID generation (%g UUIDs)", n_uuids))
-for i, result in ipairs(res) do
+for i, result in ipairs(gen_res) do
   print(string.format("%d. %s\ttook:\t%fs", i, result.module, result.time))
 end
 
@@ -61,21 +65,39 @@ else
   }
 end
 
-res = {}
+local uuids = {}
+local p_invalid_uuids = p_valid_uuids + (100 - p_valid_uuids) / 2
 for i = 1, n_uuids do
-  uuids[i] = luajit_uuid() -- we need v4 uuids to validate with our module
+  local r = math.random(0, 100)
+  if r <= p_valid_uuids then
+    uuids[i] = luajit_uuid() -- we need v4 uuids to validate with our module
+  elseif r <= p_invalid_uuids then
+    uuids[i] = "03111af4-f2ee-11e5-ba5e-43ddcc7efcdZ" -- invalid UUID
+  else
+    uuids[i] = "03111af4-f2ee-11e5-ba5e-43ddcc7efcd" -- invalid length
+  end
 end
 
+local val_res = {}
 for k, validate in pairs(tests) do
   local tstart = os.clock()
+  local check = {}
   for i = 1, n_uuids do
-    assert(validate(uuids[i]))
+    local ok = validate(uuids[i])
+    check[ok] = true
   end
-  res[#res+1] = {module = k, time = os.clock() - tstart}
+  -- make sure there is no false positives here
+  if not check[true] or not check[false] then
+    error("all validations have the same result for "..k)
+  end
+  val_res[#val_res+1] = {module = k, time = os.clock() - tstart}
 end
 
-table.sort(res, function(a, b) return a.time < b.time end)
-print(string.format("\nUUID validation if provided (%g UUIDs)", n_uuids))
-for i, result in ipairs(res) do
+table.sort(val_res, function(a, b) return a.time < b.time end)
+
+print(string.format("\nUUID validation if provided (set of %d%% valid, %d%% invalid)",
+  p_valid_uuids,
+  100 - p_valid_uuids))
+for i, result in ipairs(val_res) do
   print(string.format("%d. %s\ttook:\t%fs", i, result.module, result.time))
 end
