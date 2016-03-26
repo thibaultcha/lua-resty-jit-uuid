@@ -7,7 +7,6 @@
 
 local bit = require 'bit'
 
-local randomseed = math.randomseed
 local concat = table.concat
 local random = math.random
 local match = string.match
@@ -21,36 +20,38 @@ local _M = {
 
 function _M.seed()
   if ngx then
-    randomseed(ngx.time() + ngx.worker.pid())
+    math.randomseed(ngx.time() + ngx.worker.pid())
   elseif package.loaded['socket'] and package.loaded['socket'].gettime then
-    randomseed(package.loaded['socket'].gettime()*10000)
+    math.randomseed(package.loaded['socket'].gettime()*10000)
   else
-    randomseed(os.time())
+    math.randomseed(os.time())
   end
 end
 
-local buf = {0,0,0,0,'-',0,0,'-',0,0,'-',0,0,'-',0,0,0,0,0,0}
-local buf_len = #buf
+do
+  local buf = {0,0,0,0,'-',0,0,'-',0,0,'-',0,0,'-',0,0,0,0,0,0}
+  local buf_len = #buf
 
---- Generate a v4 uuid.
--- @treturn string `uuid`: a v4 (randomly generated) uuid.
--- @usage
--- local uuid = require "resty.jit-uuid"
---
--- local u1 = uuid() -- metatable
--- local u2 = uuid.generate()
-function _M.generate()
-  for i = 1, buf_len do
-    if i ~= 9 and i ~= 12 then -- benchmarked
-      buf[i] = tohex(random(0, 255), 2)
+  --- Generate a v4 uuid.
+  -- @treturn string `uuid`: a v4 (randomly generated) uuid.
+  -- @usage
+  -- local uuid = require "resty.jit-uuid"
+  --
+  -- local u1 = uuid() -- metatable
+  -- local u2 = uuid.generate()
+  function _M.generate()
+    for i = 1, buf_len do
+      if i ~= 9 and i ~= 12 then -- benchmarked
+        buf[i] = tohex(random(0, 255), 2)
+      end
     end
+
+    buf[5], buf[8], buf[11], buf[14] = '-', '-', '-', '-' -- benchmarked
+    buf[9] = tohex(bor(band(random(0, 255), 0x0F), 0x40), 2)
+    buf[12] = tohex(bor(band(random(0, 255), 0x3F), 0x80), 2)
+
+    return concat(buf)
   end
-
-  buf[5], buf[8], buf[11], buf[14] = '-', '-', '-', '-' -- benchmarked
-  buf[9] = tohex(bor(band(random(0, 255), 0x0F), 0x40), 2)
-  buf[12] = tohex(bor(band(random(0, 255), 0x3F), 0x80), 2)
-
-  return concat(buf)
 end
 
 do
