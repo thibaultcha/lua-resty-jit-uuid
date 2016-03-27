@@ -9,7 +9,6 @@ local bit = require 'bit'
 
 local concat = table.concat
 local random = math.random
-local match = string.match
 local tohex = bit.tohex
 local band = bit.band
 local bor = bit.bor
@@ -81,6 +80,7 @@ do
     end
 
   else
+    local match = string.match
     local d = '[0-9a-f]'
     local p = '^'..concat({
                 d:rep(8),
