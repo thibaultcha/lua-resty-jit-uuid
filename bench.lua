@@ -28,12 +28,21 @@ local tests = {
 }
 
 local gen_res = {}
+local luajit_uuid_time
 for k, uuid in pairs(tests) do
   local tstart = os.clock()
   for _ = 1, n_uuids do
     uuid()
   end
-  gen_res[#gen_res+1] = {module = k, time = os.clock() - tstart}
+  local time = os.clock() - tstart
+  gen_res[#gen_res+1] = {module = k, time = time}
+  if k == "Pure LuaJIT" then
+    luajit_uuid_time = time
+  end
+end
+
+for _, res in ipairs(gen_res) do
+  res.diff = ((res.time - luajit_uuid_time)/luajit_uuid_time)*100
 end
 
 table.sort(gen_res, function(a, b) return a.time < b.time end)
@@ -41,7 +50,7 @@ table.sort(gen_res, function(a, b) return a.time < b.time end)
 print(jit.version)
 print(string.format("UUID generation (%g UUIDs)", n_uuids))
 for i, result in ipairs(gen_res) do
-  print(string.format("%d. %s\ttook:\t%fs", i, result.module, result.time))
+  print(string.format("%d. %s\ttook:\t%fs\t%+d%%", i, result.module, result.time, result.diff))
 end
 
 -------------
@@ -94,7 +103,7 @@ end
 
 table.sort(val_res, function(a, b) return a.time < b.time end)
 
-print(string.format("\nUUID validation if provided (set of %d%% valid, %d%% invalid)",
+print(string.format("\nUUID validation if supported (set of %d%% valid, %d%% invalid)",
   p_valid_uuids,
   100 - p_valid_uuids))
 for i, result in ipairs(val_res) do

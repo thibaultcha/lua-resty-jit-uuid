@@ -103,21 +103,21 @@ Run `make bench` to run them:
 ```
 LuaJIT 2.1.0-beta1
 UUID generation (1e+06 UUIDs)
-1. FFI binding took:   0.089645s
-2. C binding   took:   0.233015s
-3. Pure LuaJIT took:   0.719925s
-4. Pure Lua    took:   2.045098s
+1. FFI binding took: 0.095588s -86%
+2. C binding   took: 0.234322s -66%
+3. Pure LuaJIT took: 0.703376s +0%
+4. Pure Lua    took: 1.908608s +171%
 
 UUID validation if provided (set of 70% valid, 30% invalid)
-1. Pure LuaJIT (JIT PCRE enabled) took:   0.245202s
-2. FFI binding                    took:   0.328822s
-3. Pure LuaJIT (Lua patterns)     took:   0.557272s
+1. Pure LuaJIT (JIT PCRE enabled) took: 0.245202s
+2. FFI binding                    took: 0.328822s
+3. Pure LuaJIT (Lua patterns)     took: 0.557272s
 ```
 
 * FFI binding: <https://github.com/bungle/lua-resty-uuid>
 * C binding: <https://github.com/Mashape/lua-uuid>
 * Pure Lua: <https://github.com/Tieske/uuid>
-* Pure LuaJIT: this module
+* Pure LuaJIT: this module (base reference for generation % comparison)
 
 [Back to TOC](#table-of-contents)
 
