@@ -7,12 +7,6 @@
 
 local bit = require 'bit'
 
-local concat = table.concat
-local random = math.random
-local tohex = bit.tohex
-local band = bit.band
-local bor = bit.bor
-
 local _M = {
   _VERSION = '0.0.2'
 }
@@ -28,6 +22,11 @@ function _M.seed()
 end
 
 do
+  local concat = table.concat
+  local random = math.random
+  local tohex = bit.tohex
+  local band = bit.band
+  local bor = bit.bor
   local buf = {0,0,0,0,'-',0,0,'-',0,0,'-',0,0,'-',0,0,0,0,0,0}
   local buf_len = #buf
 
@@ -40,12 +39,11 @@ do
   -- local u2 = uuid.generate()
   function _M.generate()
     for i = 1, buf_len do
-      if i ~= 9 and i ~= 12 then -- benchmarked
+      if i ~= 9 and i ~= 12 and i ~= 5 and i ~= 8 and i ~= 11 and i ~= 14 then
         buf[i] = tohex(random(0, 255), 2)
       end
     end
 
-    buf[5], buf[8], buf[11], buf[14] = '-', '-', '-', '-' -- benchmarked
     buf[9] = tohex(bor(band(random(0, 255), 0x0F), 0x40), 2)
     buf[12] = tohex(bor(band(random(0, 255), 0x3F), 0x80), 2)
 
@@ -54,8 +52,7 @@ do
 end
 
 do
-  local find = string.find
-  if ngx and find(ngx.config.nginx_configure(),'--with-pcre-jit',nil,true) then
+  if ngx and string.find(ngx.config.nginx_configure(),'--with-pcre-jit',nil,true) then
     local re_find = ngx.re.find
     local regex = '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
 
@@ -82,7 +79,7 @@ do
   else
     local match = string.match
     local d = '[0-9a-f]'
-    local p = '^'..concat({
+    local p = '^'..table.concat({
                 d:rep(8),
                 d:rep(4),
            '4'..d:rep(3),

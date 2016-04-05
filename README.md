@@ -48,7 +48,7 @@ OpenResty:
 http {
     init_worker_by_lua_block {
         local uuid = require "resty.jit-uuid"
-        uuid.seed() -- Very important!
+        uuid.seed() -- very important!
     }
 
     server {

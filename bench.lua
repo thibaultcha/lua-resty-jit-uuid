@@ -22,7 +22,9 @@ math.randomseed(os.time())
 -------------
 local tests = {
   ["Pure Lua"] = lua_uuid.new,
-  ["Pure LuaJIT"]= luajit_uuid.generate,
+  ["Pure LuaJIT"] = luajit_uuid.generate,
+  ["FFI LuaJIT"] = luajit_uuid.generate_ffi,
+  ["FFI LuaJIT 2"] = luajit_uuid.generate_ffi_2,
   ["C binding"] = cuuid,
   ["FFI binding"] = ffi_uuid.generate_random
 }
