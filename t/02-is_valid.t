@@ -20,10 +20,19 @@ __DATA__
         content_by_lua_block {
             local uuid = require 'resty.jit-uuid'
             local tests = {
+                -- v4
                 'cbb297c0-a956-486d-ad1d-f9b42df9465a',
                 '5014127b-4189-494d-b36f-9191cb39bf20',
                 '6de59524-0091-48fa-9c13-67908ff5e63c',
                 '24b0b2cf-4481-4f41-88b3-aac0a941d756',
+
+                -- v3
+                '3db7a435-8c56-359d-a563-1b69e6802c78',
+                'e8d3eeba-7723-3b72-bbc5-8f598afa6773',
+
+                -- upper-case
+                'AC4FAD5A-98A7-45EC-9C4B-5BCB53706A86',
+                '83BEA132-0130-4C54-911F-F5F168A3C40E',
 
                 '24b0b2cf-4481-4f41-38b3-aac0a941d756', -- invalid variant
                 '24b0b2cf-4481-4f41-88b3-aac0a941d75',
@@ -40,6 +49,10 @@ __DATA__
 --- request
 GET /t
 --- response_body
+true
+true
+true
+true
 true
 true
 true
@@ -54,7 +67,7 @@ false
 
 
 
-=== TEST 2: is_valid() Lua pattern
+=== TEST 2: is_valid() no PCRE
 --- http_config eval: $::HttpConfig
 --- config
     location /t {
@@ -66,6 +79,14 @@ false
                 '5014127b-4189-494d-b36f-9191cb39bf20',
                 '6de59524-0091-48fa-9c13-67908ff5e63c',
                 '24b0b2cf-4481-4f41-88b3-aac0a941d756',
+
+                -- v3
+                '3db7a435-8c56-359d-a563-1b69e6802c78',
+                'e8d3eeba-7723-3b72-bbc5-8f598afa6773',
+
+                -- upper-case
+                'AC4FAD5A-98A7-45EC-9C4B-5BCB53706A86',
+                '83BEA132-0130-4C54-911F-F5F168A3C40E',
 
                 '24b0b2cf-4481-4f41-38b3-aac0a941d756', -- invalid variant
                 '24b0b2cf-4481-4f41-88b3-aac0a941d75',
@@ -82,6 +103,10 @@ false
 --- request
 GET /t
 --- response_body
+true
+true
+true
+true
 true
 true
 true
