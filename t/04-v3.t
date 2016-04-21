@@ -7,7 +7,7 @@ _EOC_
 
 master_on();
 
-plan tests => repeat_each() * blocks() * 3;
+plan tests => repeat_each() * blocks() * 3 - 2;
 
 run_tests();
 
@@ -94,7 +94,45 @@ e8d3eeba-7723-3b72-bbc5-8f598afa6773
 
 
 
-=== TEST 4: invalid namespace
+=== TEST 4: factory_v3() no support outside of ngx_lua
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        content_by_lua_block {
+            ngx = false
+            local uuid = require 'resty.jit-uuid'
+
+            uuid.factory_v3()
+        }
+    }
+--- request
+GET /t
+--- error_code: 500
+--- error_log
+v3 UUID generation only supported in ngx_lua
+
+
+
+=== TEST 5: generate_v3() no support outside of ngx_lua
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        content_by_lua_block {
+            ngx = false
+            local uuid = require 'resty.jit-uuid'
+
+            uuid.generate_v3()
+        }
+    }
+--- request
+GET /t
+--- error_code: 500
+--- error_log
+v3 UUID generation only supported in ngx_lua
+
+
+
+=== TEST 6: invalid namespace
 --- http_config eval: $::HttpConfig
 --- config
     location /t {
@@ -110,13 +148,13 @@ e8d3eeba-7723-3b72-bbc5-8f598afa6773
 --- request
 GET /t
 --- response_body
-invalid namespace
+namespace must be a valid UUID
 --- no_error_log
 [error]
 
 
 
-=== TEST 5: invalid name
+=== TEST 7: invalid name
 --- http_config eval: $::HttpConfig
 --- config
     location /t {
@@ -132,7 +170,7 @@ invalid namespace
 --- request
 GET /t
 --- response_body
-invalid name
+name must be a string
 --- no_error_log
 [error]
 

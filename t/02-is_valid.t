@@ -44,6 +44,8 @@ __DATA__
             for i = 1, #tests do
                 ngx.say(uuid.is_valid(tests[i]))
             end
+
+            ngx.say(uuid.is_valid())
         }
     }
 --- request
@@ -57,6 +59,7 @@ true
 true
 true
 true
+false
 false
 false
 false
@@ -98,6 +101,8 @@ false
             for i = 1, #tests do
                 ngx.say(uuid.is_valid(tests[i]))
             end
+
+            ngx.say(uuid.is_valid())
         }
     }
 --- request
@@ -111,6 +116,7 @@ true
 true
 true
 true
+false
 false
 false
 false
