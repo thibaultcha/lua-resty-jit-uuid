@@ -1,9 +1,9 @@
 --- jit-uuid
--- Fast and dependency-free uuid generation for OpenResty/LuaJIT.
+-- Fast and dependency-free UUID library for LuaJIT/ngx_lua.
 -- @module jit-uuid
 -- @author Thibault Charbonnier
 -- @license MIT
--- @release 0.0.2
+-- @release 0.0.3
 
 local bit = require 'bit'
 local tohex = bit.tohex
