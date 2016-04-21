@@ -1,5 +1,5 @@
-if not jit then
-  error("must run in LuaJIT or resty-cli")
+if not ngx or not jit then
+  error('must run in resty-cli with LuaJIT')
 end
 
 -------------
@@ -8,88 +8,116 @@ end
 local n_uuids = 10^6
 local p_valid_uuids = 70
 
-package.path = "lib/?.lua;"..package.path
+package.path = 'lib/?.lua;'..package.path
 
-local cuuid = require "lua_uuid"
-local lua_uuid = require "uuid"
-local ffi_uuid = require "resty.uuid"
-local luajit_uuid = require "resty.jit-uuid"
+local cuuid = require 'lua_uuid'
+local lua_uuid = require 'uuid'
+local ffi_uuid = require 'resty.uuid'
+local luajit_uuid = require 'resty.jit-uuid'
+package.loaded['resty.jit-uuid'] = nil
+ngx.config.nginx_configure = function() return '' end
+local luajit_uuid_no_pcre = require 'resty.jit-uuid'
 
 math.randomseed(os.time())
 
--------------
--- Generation
--------------
+---------------------
+-- UUID v4 generation
+---------------------
 local tests = {
-  ["Pure Lua"] = lua_uuid.new,
-  ["Pure LuaJIT"] = luajit_uuid.generate,
-  ["FFI LuaJIT"] = luajit_uuid.generate_ffi,
-  ["FFI LuaJIT 2"] = luajit_uuid.generate_ffi_2,
-  ["C binding"] = cuuid,
-  ["FFI binding"] = ffi_uuid.generate_random
+  ['C binding     '] = cuuid,
+  ['Pure Lua      '] = lua_uuid.new,
+  ['resty-jit-uuid'] = luajit_uuid.generate_v4,
+  ['FFI binding   '] = ffi_uuid.generate_random
 }
 
-local gen_res = {}
-local luajit_uuid_time
+local v4_results = {}
+local time_reference
 for k, uuid in pairs(tests) do
+  collectgarbage()
+
   local tstart = os.clock()
   for _ = 1, n_uuids do
     uuid()
   end
   local time = os.clock() - tstart
-  gen_res[#gen_res+1] = {module = k, time = time}
-  if k == "Pure LuaJIT" then
-    luajit_uuid_time = time
+
+  v4_results[#v4_results+1] = {module = k, time = time}
+  if k == 'resty-jit-uuid' then
+    time_reference = time
   end
 end
 
-for _, res in ipairs(gen_res) do
-  res.diff = ((res.time - luajit_uuid_time)/luajit_uuid_time)*100
+for _, res in ipairs(v4_results) do
+  res.diff = ((res.time - time_reference)/time_reference)*100
 end
 
-table.sort(gen_res, function(a, b) return a.time < b.time end)
+table.sort(v4_results, function(a, b) return a.time < b.time end)
 
-print(jit.version)
-print(string.format("UUID generation (%g UUIDs)", n_uuids))
-for i, result in ipairs(gen_res) do
-  print(string.format("%d. %s\ttook:\t%fs\t%+d%%", i, result.module, result.time, result.diff))
+print(string.format('%s with %g UUIDs', jit.version, n_uuids))
+print('UUID v4 (random) generation')
+for i, result in ipairs(v4_results) do
+  print(string.format('%d. %s\ttook:\t%fs\t%+d%%', i, result.module, result.time, result.diff))
+end
+
+---------------------
+-- UUID v3 generation
+---------------------
+
+-- unique names, unique namespaces: no strings interned
+tests = {
+  ['resty-jit-uuid'] = assert(luajit_uuid.factory_v3('cc7da0b0-0743-11e6-968a-bfd4d8c62f62'))
+}
+local names = {}
+for i = 1, n_uuids do
+  names[i] = ffi_uuid.generate_random()
+end
+
+local v3_results = {}
+for k, factory in pairs(tests) do
+  collectgarbage()
+
+  local tstart = os.clock()
+  local check = {}
+  for i = 1, n_uuids do
+    factory(names[i])
+  end
+  local time = os.clock() - tstart
+
+  v3_results[#v3_results+1] = {module = k, time = time}
+end
+
+table.sort(v3_results, function(a, b) return a.time < b.time end)
+
+print('\nUUID v3 (name-based) generation if supported')
+for i, result in ipairs(v3_results) do
+  print(string.format('%d. %s\ttook:\t%fs', i, result.module, result.time))
 end
 
 -------------
 -- Validation
 -------------
-
-if ngx then -- running in resty-cli
-  package.loaded["resty.jit-uuid"] = nil
-  ngx.config.nginx_configure = function() return "" end
-  local pattern_uuid = require "resty.jit-uuid"
-  tests = {
-    ["FFI binding"] = ffi_uuid.is_valid,
-    ["Pure LuaJIT (JIT PCRE enabled)"] = luajit_uuid.is_valid,
-    ["Pure LuaJIT (Lua patterns)"] = pattern_uuid.is_valid
-  }
-else
-  tests = {
-    ["FFI binding"] = ffi_uuid.is_valid,
-    ["Pure LuaJIT (Lua patterns)"] = luajit_uuid.is_valid
-  }
-end
+tests = {
+  ['FFI binding                      '] = ffi_uuid.is_valid,
+  ['resty-jit-uuid (JIT PCRE enabled)'] = luajit_uuid.is_valid,
+  ['resty-jit-uuid (Lua patterns)    '] = luajit_uuid_no_pcre.is_valid
+}
 
 local uuids = {}
 local p_invalid_uuids = p_valid_uuids + (100 - p_valid_uuids) / 2
 for i = 1, n_uuids do
   local r = math.random(0, 100)
   if r <= p_valid_uuids then
-    uuids[i] = luajit_uuid() -- we need v4 uuids to validate with our module
+    uuids[i] = ffi_uuid.generate_random()
   elseif r <= p_invalid_uuids then
-    uuids[i] = "03111af4-f2ee-11e5-ba5e-43ddcc7efcdZ" -- invalid UUID
+    uuids[i] = '03111af4-f2ee-11e5-ba5e-43ddcc7efcdZ' -- invalid UUID
   else
-    uuids[i] = "03111af4-f2ee-11e5-ba5e-43ddcc7efcd" -- invalid length
+    uuids[i] = '03111af4-f2ee-11e5-ba5e-43ddcc7efcd' -- invalid length
   end
 end
 
-local val_res = {}
+local valid_results = {}
 for k, validate in pairs(tests) do
+  collectgarbage()
   local tstart = os.clock()
   local check = {}
   for i = 1, n_uuids do
@@ -98,16 +126,16 @@ for k, validate in pairs(tests) do
   end
   -- make sure there is no false positives here
   if not check[true] or not check[false] then
-    error("all validations have the same result for "..k)
+    error('all validations have the same result for '..k)
   end
-  val_res[#val_res+1] = {module = k, time = os.clock() - tstart}
+  valid_results[#valid_results+1] = {module = k, time = os.clock() - tstart}
 end
 
-table.sort(val_res, function(a, b) return a.time < b.time end)
+table.sort(valid_results, function(a, b) return a.time < b.time end)
 
-print(string.format("\nUUID validation if supported (set of %d%% valid, %d%% invalid)",
+print(string.format('\nUUID validation if supported (set of %d%% valid, %d%% invalid)',
   p_valid_uuids,
   100 - p_valid_uuids))
-for i, result in ipairs(val_res) do
-  print(string.format("%d. %s\ttook:\t%fs", i, result.module, result.time))
+for i, result in ipairs(valid_results) do
+  print(string.format('%d. %s\ttook:\t%fs', i, result.module, result.time))
 end

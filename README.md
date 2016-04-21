@@ -3,7 +3,7 @@
 [![Module Version][badge-version-image]][luarocks-resty-jit-uuid]
 [![Build Status][badge-travis-image]][badge-travis-url]
 
-A pure LuaJIT (no dependencies) uuid generator tuned for performance.
+A pure LuaJIT (no dependencies) UUID library tuned for performance.
 
 ### Table of Contents
 
@@ -12,19 +12,22 @@ A pure LuaJIT (no dependencies) uuid generator tuned for performance.
 * [Installation](#installation)
 * [Documentation](#documentation)
 * [Benchmarks](#benchmarks)
+* [Contributions](#contributions)
 * [License](#license)
 
 ### Motivation
 
-This module is aimed at filling a gap between performant uuid generation and
-the libuuid requirement of FFI and C bindings. Its goal is to provide **fast**
-uuid generation, **without dependencies** for OpenResty and LuaJIT.
+This module is aimed at being a free of dependencies, performant and
+complete UUID library for LuaJIT and ngx_lua.
 
-It is a good candidate if you want a more performant generation than pure Lua,
-without depending on libuuid. It also provides very efficient uuid validation,
-using JIT PCRE if available in OpenResty, with a fallback on Lua patterns.
+Unlike FFI and C bindings, it does not depend on libuuid being available
+in your system. On top of that, it performs **better** than most (all?)
+of the generators it was benchmarked against, FFI bindings included.
 
-See the [Benchmarks](#benchmarks) section for comparisons between other uuid
+Finally, it provides additional features such as UUID v3/v4 generation and
+UUID validation.
+
+See the [Benchmarks](#benchmarks) section for comparisons between other UUID
 libraries for Lua/LuaJIT.
 
 [Back to TOC](#table-of-contents)
@@ -33,28 +36,30 @@ libraries for Lua/LuaJIT.
 
 LuaJIT:
 ```lua
-local uuid = require "resty.jit-uuid"
+local uuid = require 'resty.jit-uuid'
 
-uuid.seed()       -- automatic seeding with os.time(), LuaSocket, or ngx.time()
+uuid.seed()        ---> automatic seeding with os.time(), LuaSocket, or ngx.time()
 
-uuid()            ---> uuid (with metatable lookup)
-uuid.generate()   ---> uuid
+uuid()             ---> v4 UUID (random)
+uuid.generate_v4() ---> v4 UUID
 
-uuid.is_valid("") ---> true/false (automatic JIT PCRE or Lua patterns)
+uuid.generate_v3() ---> v3 UUID (name-based)
+
+uuid.is_valid()    ---> true/false (automatic JIT PCRE or Lua patterns)
 ```
 
 OpenResty:
 ```nginx
 http {
     init_worker_by_lua_block {
-        local uuid = require "resty.jit-uuid"
+        local uuid = require 'resty.jit-uuid'
         uuid.seed() -- very important!
     }
 
     server {
         location / {
             content_by_lua_block {
-                local uuid = require "resty.jit-uuid"
+                local uuid = require 'resty.jit-uuid'
                 ngx.say(uuid())
             }
         }
@@ -91,33 +96,45 @@ Documentation is available online at
 
 This module has been carefully benchmarked on each step of its implementation
 to ensure the best performance for OpenResty and plain LuaJIT. For example,
-uuid validation will use JIT PCRE over Lua patterns if available, to ensure the
-best performance.
+UUID validation will use JIT PCRE over Lua patterns if available, to ensure
+the best performance.
 
-The `bench.lua` file provides benchmarks of uuid generation for several popular
-uuid libraries. As expected, C and FFI bindings are the fastest, but this
-module still provides a very reasonable performance at the cost of being free
-of dependencies.
+The `bench.lua` file provides benchmarks of UUID generation for several popular
+UUID libraries.
 
 Run `make bench` to run them:
 ```
-LuaJIT 2.1.0-beta1
-UUID generation (1e+06 UUIDs)
-1. FFI binding took: 0.095588s -86%
-2. C binding   took: 0.234322s -66%
-3. Pure LuaJIT took: 0.703376s +0%
-4. Pure Lua    took: 1.908608s +171%
+LuaJIT 2.1.0-beta1 with 1e+06 UUIDs
+UUID v4 (random) generation
+1. resty-jit-uuid   took:   0.064228s    0%
+2. FFI binding      took:   0.093374s   +45%
+3. C binding        took:   0.220542s   +243%
+4. Pure Lua         took:   2.051905s   +3094%
 
-UUID validation if provided (set of 70% valid, 30% invalid)
-1. Pure LuaJIT (JIT PCRE enabled) took: 0.245202s
-2. FFI binding                    took: 0.328822s
-3. Pure LuaJIT (Lua patterns)     took: 0.557272s
+UUID v3 (name-based) generation if supported
+1. resty-jit-uuid   took:   1.306127s
+
+UUID validation if supported (set of 70% valid, 30% invalid)
+1. resty-jit-uuid (JIT PCRE enabled)    took:   0.223060s
+2. FFI binding                          took:   0.256580s
+3. resty-jit-uuid (Lua patterns)        took:   0.444174s
 ```
 
 * FFI binding: <https://github.com/bungle/lua-resty-uuid>
 * C binding: <https://github.com/Mashape/lua-uuid>
 * Pure Lua: <https://github.com/Tieske/uuid>
-* Pure LuaJIT: this module (base reference for generation % comparison)
+* resty-jit-uuid: this module (base reference for generation % comparison)
+
+*Note*: UUID validation performance in ngx_lua (JIT PCRE) can be greatly
+improved by enabling
+[lua-resty-core](https://github.com/openresty/lua-resty-core).
+
+[Back to TOC](#table-of-contents)
+
+### Contributions
+
+Suggestions improving this module's or the benchmarks' performance
+(of any benchmarked library) are particularly appreciated.
 
 [Back to TOC](#table-of-contents)
 
@@ -132,4 +149,3 @@ Work licensed under the MIT License.
 [badge-travis-url]: https://travis-ci.org/thibaultCha/lua-resty-jit-uuid
 [badge-travis-image]: https://travis-ci.org/thibaultCha/lua-resty-jit-uuid.svg?branch=master
 [badge-version-image]: https://img.shields.io/badge/version-0.0.2-blue.svg?style=flat
-

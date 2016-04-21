@@ -7,13 +7,15 @@ source = {
 description = {
   summary = "Fast and dependency-free uuid generation for OpenResty/LuaJIT",
   detailed = [[
-    This module is aimed at filling a gap between performant uuid generation and
-    the libuuid requirement of FFI and C bindings. Its goal is to provide fast
-    uuid generation, without dependencies for OpenResty and LuaJIT.
+    This module is aimed at being a free of dependencies, performant and
+    complete UUID library for LuaJIT and ngx_lua.
 
-    It is a good candidate if you want a more performant generation than pure Lua,
-    without depending on libuuid. It also provides very efficient uuid validation,
-    using JIT PCRE if available in OpenResty, with a fallback on Lua patterns.
+    Unlike FFI and C bindings, it does not depend on libuuid being available
+    in your system. On top of that, it performs **better** than most (all?)
+    of the generators it was benchmarked against, FFI bindings included.
+
+    Finally, it provides additional features such as UUID v3/v4 generation and
+    UUID validation.
   ]],
   homepage = "http://thibaultcha.github.io/lua-resty-jit-uuid/",
   license = "MIT"
