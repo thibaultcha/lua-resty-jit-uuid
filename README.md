@@ -125,7 +125,7 @@ UUID validation if supported (set of 70% valid, 30% invalid)
 * Pure Lua: <https://github.com/Tieske/uuid>
 * resty-jit-uuid: this module (base reference for generation % comparison)
 
-*Note*: UUID validation performance in ngx_lua (JIT PCRE) can be greatly
+**Note**: UUID validation performance in ngx_lua (JIT PCRE) can be greatly
 improved by enabling
 [lua-resty-core](https://github.com/openresty/lua-resty-core).
 
@@ -148,4 +148,4 @@ Work licensed under the MIT License.
 
 [badge-travis-url]: https://travis-ci.org/thibaultCha/lua-resty-jit-uuid
 [badge-travis-image]: https://travis-ci.org/thibaultCha/lua-resty-jit-uuid.svg?branch=master
-[badge-version-image]: https://img.shields.io/badge/version-0.0.2-blue.svg?style=flat
+[badge-version-image]: https://img.shields.io/badge/version-0.0.3-blue.svg?style=flat

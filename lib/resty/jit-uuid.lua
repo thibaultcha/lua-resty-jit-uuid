@@ -11,13 +11,32 @@ local band = bit.band
 local bor = bit.bor
 
 local _M = {
-  _VERSION = '0.0.2'
+  _VERSION = '0.0.3'
 }
 
 ----------
 -- seeding
 ----------
 
+--- Seed the random number generator.
+-- Under the hood, this function calls `math.randomseed`.
+-- It makes sure to use the most appropriate seeding technique for
+-- the current environment, guaranteeing a unique seed.
+--
+-- To guarantee unique UUIDs, you must have correctly seeded
+-- the Lua pseudo-random generator (with `math.randomseed`).
+-- You are free to seed it any way you want, but this function
+-- can do it for you if you'd like, with some added guarantees.
+-- @usage
+-- local uuid = require 'resty.jit-uuid'
+-- uuid.seed()
+--
+-- -- in ngx_lua, seed in the init_worker context:
+-- init_worker_by_lua {
+--   local uuid = require 'resty.jit-uuid'
+--   uuid.seed()
+-- }
+--
 function _M.seed()
   if ngx then
     math.randomseed(ngx.time() + ngx.worker.pid())
@@ -137,6 +156,7 @@ do
   local is_valid = _M.is_valid
 
   --- Generate a v3 UUID factory.
+  -- @function factory_v3
   -- Creates a closure generating namespaced v3 UUIDs.
   --
   -- @param[type=string] namespace (must be a valid UUID according to `is_valid`)
