@@ -67,10 +67,11 @@ http {
 }
 ```
 
-**Note**: when used in OpenResty, it is **very important** that you seed this
+**Note**: when used in ngx_lua, it is **very important** that you seed this
 module in the `init_worker` phase. If you do not, your workers will generate
-identical uuid sequences, which could lead to serious issues in your
-application.
+identical UUID sequences, which could lead to serious issues in your
+application. The seeding requirement also apply in use outside of ngx_lua,
+though seeding is less delicate in such cases.
 
 [Back to TOC](#table-of-contents)
 
@@ -96,8 +97,7 @@ Documentation is available online at
 
 This module has been carefully benchmarked on each step of its implementation
 to ensure the best performance for OpenResty and plain LuaJIT. For example,
-UUID validation will use JIT PCRE over Lua patterns if available, to ensure
-the best performance.
+UUID validation will use JIT PCRE over Lua patterns when possible.
 
 The `bench.lua` file provides benchmarks of UUID generation for several popular
 UUID libraries.
