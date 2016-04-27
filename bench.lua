@@ -88,8 +88,42 @@ end
 
 table.sort(v3_results, function(a, b) return a.time < b.time end)
 
-print('\nUUID v3 (name-based) generation if supported')
+print('\nUUID v3 (name-based and MD5) generation if supported')
 for i, result in ipairs(v3_results) do
+  print(string.format('%d. %s\ttook:\t%fs', i, result.module, result.time))
+end
+
+---------------------
+-- UUID v5 generation
+---------------------
+
+-- unique names, unique namespaces: no strings interned
+tests = {
+  ['resty-jit-uuid'] = assert(luajit_uuid.factory_v5('1b985f4a-06be-11e6-aff4-ff8d14e25128'))
+}
+local names = {}
+for i = 1, n_uuids do
+  names[i] = ffi_uuid.generate_random()
+end
+
+local v5_results = {}
+for k, factory in pairs(tests) do
+  collectgarbage()
+
+  local tstart = os.clock()
+  local check = {}
+  for i = 1, n_uuids do
+    factory(names[i])
+  end
+  local time = os.clock() - tstart
+
+  v5_results[#v5_results+1] = {module = k, time = time}
+end
+
+table.sort(v5_results, function(a, b) return a.time < b.time end)
+
+print('\nUUID v5 (name-based and SHA-1) generation if supported')
+for i, result in ipairs(v5_results) do
   print(string.format('%d. %s\ttook:\t%fs', i, result.module, result.time))
 end
 
