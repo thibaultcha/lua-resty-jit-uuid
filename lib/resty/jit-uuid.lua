@@ -321,10 +321,10 @@ do
 
   else
 
-    function _M.factory_v3() error('v3 UUID generation only supported in ngx_lua') end
-    function _M.generate_v3() error('v3 UUID generation only supported in ngx_lua') end
-    function _M.factory_v5() error('v5 UUID generation only supported in ngx_lua') end
-    function _M.generate_v5() error('v5 UUID generation only supported in ngx_lua') end
+    function _M.factory_v3() error('v3 UUID generation only supported in ngx_lua', 2) end
+    function _M.generate_v3() error('v3 UUID generation only supported in ngx_lua', 2) end
+    function _M.factory_v5() error('v5 UUID generation only supported in ngx_lua', 2) end
+    function _M.generate_v5() error('v5 UUID generation only supported in ngx_lua', 2) end
 
   end
 end
