@@ -5,7 +5,7 @@ end
 -------------
 -- Settings
 -------------
-local n_uuids = 10^6
+local n_uuids = 1e6
 local p_valid_uuids = 70
 
 package.path = 'lib/?.lua;'..package.path

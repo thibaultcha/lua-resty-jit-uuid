@@ -36,7 +36,6 @@ local _M = {
 --   local uuid = require 'resty.jit-uuid'
 --   uuid.seed()
 -- }
---
 function _M.seed()
   if ngx then
     math.randomseed(ngx.time() + ngx.worker.pid())
@@ -149,43 +148,23 @@ end
 do
   if ngx then
     local tonumber = tonumber
-    local char = string.char
+    local gmatch = string.gmatch
     local type = type
+    local char = string.char
     local fmt = string.format
     local sub = string.sub
-    local md5 = ngx.md5
-    local sha1_bin = ngx.sha1_bin
-    local gmatch = string.gmatch
-    local is_valid = _M.is_valid
-
-    local ffi = require 'ffi'
-    local C = ffi.C
-    local ffi_new = ffi.new
-    local ffi_str = ffi.string
-    local str_type = ffi.typeof('uint8_t[?]')
-    ffi.cdef [[
-      typedef unsigned char u_char;
-      u_char * ngx_hex_dump(u_char *dst, const u_char *src, size_t len);
-    ]]
-
-    local function bin_tohex(s)
-      local len = #s * 2
-      local buf = ffi_new(str_type, len)
-      C.ngx_hex_dump(buf, s, #s)
-      return ffi_str(buf, len)
-    end
 
     local function factory(namespace, hash_fn)
-      if not is_valid(namespace) then
+      if not _M.is_valid(namespace) then
         return nil, 'namespace must be a valid UUID'
       end
 
       local binary = ''
-      local iter = gmatch(namespace, '([%a%d][%a%d])')
+      local iter = gmatch(namespace, '([%a%d][%a%d])') -- pattern faster than PCRE without resty.core
       while true do
         local m = iter()
         if not m then break end
-        binary = binary..char(tonumber(m, 16))
+        binary = binary..char(tonumber(m, 16)) -- no noticeable improvement with buffer table
       end
 
       return function(name)
@@ -205,14 +184,6 @@ do
       end
     end
 
-    local function v3_hash(binary, name)
-      local hash = md5(binary..name)
-      local ver = tohex(bor(band(tonumber(sub(hash, 13, 14), 16), 0x0F), 0x30), 2)
-      local var = tohex(bor(band(tonumber(sub(hash, 17, 18), 16), 0x3F), 0x80), 2)
-
-      return hash, ver, var
-    end
-
     --- Generate a v3 UUID factory.
     -- @function factory_v3
     -- Creates a closure generating namespaced v3 UUIDs.
@@ -230,16 +201,19 @@ do
     --
     -- local u2 = fact('foobar')
     -- ---> e8d3eeba-7723-3b72-bbc5-8f598afa6773
-    _M.factory_v3 = function(namespace)
-      return factory(namespace, v3_hash)
-    end
+    do
+      local md5 = ngx.md5
 
-    local function v5_hash(binary, name)
-      local hash = bin_tohex(sha1_bin(binary..name))
-      local ver = tohex(bor(band(tonumber(sub(hash, 13, 14), 16), 0x0F), 0x50), 2)
-      local var = tohex(bor(band(tonumber(sub(hash, 17, 18), 16), 0x3F), 0x80), 2)
+      local function v3_hash(binary, name)
+        local hash = md5(binary..name)
+        return  hash,
+                tohex(bor(band(tonumber(sub(hash, 13, 14), 16), 0x0F), 0x30), 2),
+                tohex(bor(band(tonumber(sub(hash, 17, 18), 16), 0x3F), 0x80), 2)
+      end
 
-      return hash, ver, var
+      function _M.factory_v3(namespace)
+        return factory(namespace, v3_hash)
+      end
     end
 
     --- Generate a v5 UUID factory.
@@ -259,8 +233,36 @@ do
     --
     -- local u2 = fact('foobar')
     -- ---> c9be99fc-326b-5066-bdba-dcd31a6d01ab
-    _M.factory_v5 = function(namespace)
-      return factory(namespace, v5_hash)
+    do
+      local ffi = require 'ffi'
+
+      local sha1_bin = ngx.sha1_bin
+      local C = ffi.C
+      local ffi_new = ffi.new
+      local ffi_str = ffi.string
+      local str_type = ffi.typeof('uint8_t[?]')
+      ffi.cdef [[
+        typedef unsigned char u_char;
+        u_char * ngx_hex_dump(u_char *dst, const u_char *src, size_t len);
+      ]]
+
+      local function bin_tohex(s)
+        local len = #s * 2
+        local buf = ffi_new(str_type, len)
+        C.ngx_hex_dump(buf, s, #s)
+        return ffi_str(buf, len)
+      end
+
+      local function v5_hash(binary, name)
+        local hash = bin_tohex(sha1_bin(binary..name))
+        return  hash,
+                tohex(bor(band(tonumber(sub(hash, 13, 14), 16), 0x0F), 0x50), 2),
+                tohex(bor(band(tonumber(sub(hash, 17, 18), 16), 0x3F), 0x80), 2)
+      end
+
+      function _M.factory_v5(namespace)
+        return factory(namespace, v5_hash)
+      end
     end
 
     --- Generate a v3 UUID.
