@@ -24,7 +24,7 @@ Unlike FFI and C bindings, it does not depend on libuuid being available
 in your system. On top of that, it performs **better** than most (all?)
 of the generators it was benchmarked against, FFI bindings included.
 
-Finally, it provides additional features such as UUID v3/v4 generation and
+Finally, it provides additional features such as UUID v3/v4/v5 generation and
 UUID validation.
 
 See the [Benchmarks](#benchmarks) section for comparisons between other UUID
@@ -43,7 +43,8 @@ uuid.seed()        ---> automatic seeding with os.time(), LuaSocket, or ngx.time
 uuid()             ---> v4 UUID (random)
 uuid.generate_v4() ---> v4 UUID
 
-uuid.generate_v3() ---> v3 UUID (name-based)
+uuid.generate_v3() ---> v3 UUID (name-based with MD5)
+uuid.generate_v5() ---> v5 UUID (name-based with SHA-1)
 
 uuid.is_valid()    ---> true/false (automatic JIT PCRE or Lua patterns)
 ```
@@ -67,11 +68,11 @@ http {
 }
 ```
 
-**Note**: when used in ngx_lua, it is **very important** that you seed this
-module in the `init_worker` phase. If you do not, your workers will generate
-identical UUID sequences, which could lead to serious issues in your
-application. The seeding requirement also apply in use outside of ngx_lua,
-though seeding is less delicate in such cases.
+**Note**: when generating v4 (random) UUIDs in ngx_lua, it is **very
+important** that you seed this module in the `init_worker` phase. If you do
+not, your workers will generate identical UUID sequences, which could lead to
+serious issues in your application. The seeding requirement also applies in uses
+outside of ngx_lua, though seeding is less delicate in such cases.
 
 [Back to TOC](#table-of-contents)
 
@@ -111,8 +112,11 @@ UUID v4 (random) generation
 3. C binding        took:   0.220542s   +243%
 4. Pure Lua         took:   2.051905s   +3094%
 
-UUID v3 (name-based) generation if supported
+UUID v3 (name-based and MD5) generation if supported
 1. resty-jit-uuid   took:   1.306127s
+
+UUID v5 (name-based and SHA-1) generation if supported
+1. resty-jit-uuid   took:   4.834929s
 
 UUID validation if supported (set of 70% valid, 30% invalid)
 1. resty-jit-uuid (JIT PCRE enabled)    took:   0.223060s
