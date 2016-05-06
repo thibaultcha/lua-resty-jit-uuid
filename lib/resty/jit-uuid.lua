@@ -226,7 +226,7 @@ do
     -- @usage
     -- local uuid = require 'resty.jit-uuid'
     --
-    -- local fact = assert(uuid.factory_v3('e6ebd542-06ae-11e6-8e82-bba81706b27d'))
+    -- local fact = assert(uuid.factory_v5('e6ebd542-06ae-11e6-8e82-bba81706b27d'))
     --
     -- local u1 = fact('hello')
     -- ---> 4850816f-1658-5890-8bfd-1ed14251f1f0
