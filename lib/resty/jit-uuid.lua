@@ -11,7 +11,7 @@ local band = bit.band
 local bor = bit.bor
 
 local _M = {
-  _VERSION = '0.0.3'
+  _VERSION = '0.0.4'
 }
 
 ----------
