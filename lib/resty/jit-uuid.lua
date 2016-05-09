@@ -3,7 +3,7 @@
 -- @module jit-uuid
 -- @author Thibault Charbonnier
 -- @license MIT
--- @release 0.0.3
+-- @release 0.0.4
 
 local bit = require 'bit'
 local tohex = bit.tohex
@@ -184,10 +184,9 @@ do
       end
     end
 
-    --- Generate a v3 UUID factory.
+    --- Instanciate a v3 UUID factory.
     -- @function factory_v3
     -- Creates a closure generating namespaced v3 UUIDs.
-    --
     -- @param[type=string] namespace (must be a valid UUID according to `is_valid`)
     -- @treturn function `factory`: a v3 UUID generator.
     -- @treturn string `err`: a string describing an error
@@ -216,10 +215,9 @@ do
       end
     end
 
-    --- Generate a v5 UUID factory.
+    --- Instanciate a v5 UUID factory.
     -- @function factory_v5
     -- Creates a closure generating namespaced v5 UUIDs.
-    --
     -- @param[type=string] namespace (must be a valid UUID according to `is_valid`)
     -- @treturn function `factory`: a v5 UUID generator.
     -- @treturn string `err`: a string describing an error

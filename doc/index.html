@@ -50,7 +50,7 @@
 </p>
     <h3>Info:</h3>
     <ul>
-        <li><strong>Release</strong>: 0.0.3</li>
+        <li><strong>Release</strong>: 0.0.4</li>
         <li><strong>License</strong>: MIT</li>
         <li><strong>Author</strong>: Thibault Charbonnier</li>
     </ul>
@@ -72,11 +72,19 @@
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#factory_v3">factory_v3 (namespace)</a></td>
-	<td class="summary">Generate a v3 UUID factory.</td>
+	<td class="summary">Instanciate a v3 UUID factory.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#factory_v5">factory_v5 (namespace)</a></td>
+	<td class="summary">Instanciate a v5 UUID factory.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#generate_v3">generate_v3 (namespace, name)</a></td>
 	<td class="summary">Generate a v3 UUID.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#generate_v5">generate_v5 (namespace, name)</a></td>
+	<td class="summary">Generate a v5 UUID.</td>
 	</tr>
 </table>
 
@@ -198,7 +206,7 @@
     <strong>factory_v3 (namespace)</strong>
     </dt>
     <dd>
-    Generate a v3 UUID factory.
+    Instanciate a v3 UUID factory.
 
 
     <h3>Parameters:</h3>
@@ -237,6 +245,49 @@
 
 </dd>
     <dt>
+    <a name = "factory_v5"></a>
+    <strong>factory_v5 (namespace)</strong>
+    </dt>
+    <dd>
+    Instanciate a v5 UUID factory.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">namespace</span>
+            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         (must be a valid UUID according to <a href="index.html#is_valid">is_valid</a>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">function</span></span>
+        <code>factory</code>: a v5 UUID generator.</li>
+        <li>
+           <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        <code>err</code>: a string describing an error</li>
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">
+ <span class="keyword">local</span> uuid = <span class="global">require</span> <span class="string">'resty.jit-uuid'</span>
+
+ <span class="keyword">local</span> fact = <span class="global">assert</span>(uuid.factory_v5(<span class="string">'e6ebd542-06ae-11e6-8e82-bba81706b27d'</span>))
+
+ <span class="keyword">local</span> u1 = fact(<span class="string">'hello'</span>)
+ <span class="comment">---&gt; 4850816f-1658-5890-8bfd-1ed14251f1f0
+</span>
+ <span class="keyword">local</span> u2 = fact(<span class="string">'foobar'</span>)
+ ---&gt; c9be99fc-<span class="number">326</span>b-<span class="number">5066</span>-bdba-dcd31a6d01ab</pre>
+    </ul>
+
+</dd>
+    <dt>
     <a name = "generate_v3"></a>
     <strong>generate_v3 (namespace, name)</strong>
     </dt>
@@ -244,7 +295,8 @@
     Generate a v3 UUID.
  v3 UUIDs are created from a namespace and a name (a UUID and a string).
  The same name and namespace result in the same UUID. The same name and
- different namespaces result in different UUIDs, and vice-versa.</p>
+ different namespaces result in different UUIDs, and vice-versa.
+ The resulting UUID is derived using MD5 hashing.</p>
 
 <p> This is a sugar function which instanciates a short-lived v3 UUID factory.
  It is an expensive operation, and intensive generation using the same
@@ -288,6 +340,59 @@
     </ul>
 
 </dd>
+    <dt>
+    <a name = "generate_v5"></a>
+    <strong>generate_v5 (namespace, name)</strong>
+    </dt>
+    <dd>
+    Generate a v5 UUID.
+ v5 UUIDs are created from a namespace and a name (a UUID and a string).
+ The same name and namespace result in the same UUID. The same name and
+ different namespaces result in different UUIDs, and vice-versa.
+ The resulting UUID is derived using SHA-1 hashing.</p>
+
+<p> This is a sugar function which instanciates a short-lived v5 UUID factory.
+ It is an expensive operation, and intensive generation using the same
+ namespaces should prefer allocating their own long-lived factory with
+ <a href="index.html#factory_v5">factory_v5</a>.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">namespace</span>
+            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         (must be a valid UUID according to <a href="index.html#is_valid">is_valid</a>)
+        </li>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+
+
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        <code>uuid</code>: a v5 (namespaced) UUID.</li>
+        <li>
+           <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        <code>err</code>: a string describing an error</li>
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">
+ <span class="keyword">local</span> uuid = <span class="global">require</span> <span class="string">'resty.jit-uuid'</span>
+
+ <span class="keyword">local</span> u = uuid.generate_v5(<span class="string">'e6ebd542-06ae-11e6-8e82-bba81706b27d'</span>, <span class="string">'hello'</span>)
+ ---&gt; <span class="number">4850816</span>f-<span class="number">1658</span>-<span class="number">5890</span>-<span class="number">8</span>bfd-<span class="number">1</span>ed14251f1f0</pre>
+    </ul>
+
+</dd>
 </dl>
 
 
@@ -295,7 +400,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
-<i style="float:right;">Last updated 2016-04-20 17:47:16 </i>
+<i style="float:right;">Last updated 2016-05-09 10:26:07 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
