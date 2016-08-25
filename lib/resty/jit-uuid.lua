@@ -3,7 +3,7 @@
 -- @module jit-uuid
 -- @author Thibault Charbonnier
 -- @license MIT
--- @release 0.0.4
+-- @release 0.0.5
 
 local bit = require 'bit'
 local tohex = bit.tohex
@@ -11,7 +11,7 @@ local band = bit.band
 local bor = bit.bor
 
 local _M = {
-  _VERSION = '0.0.4'
+  _VERSION = '0.0.5'
 }
 
 ----------

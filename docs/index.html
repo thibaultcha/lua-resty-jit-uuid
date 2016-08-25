@@ -34,7 +34,7 @@
 
 
 <h2>Modules</h2>
-<ul class="$(kind=='Topics' and '' or 'nowrap'">
+<ul class="nowrap">
   <li><strong>jit-uuid</strong></li>
 </ul>
 
@@ -50,7 +50,7 @@
 </p>
     <h3>Info:</h3>
     <ul>
-        <li><strong>Release</strong>: 0.0.4</li>
+        <li><strong>Release</strong>: 0.0.5</li>
         <li><strong>License</strong>: MIT</li>
         <li><strong>Author</strong>: Thibault Charbonnier</li>
     </ul>
@@ -101,12 +101,12 @@
     </dt>
     <dd>
     Seed the random number generator.
- Under the hood, this function calls <a href="http://www.lua.org/manual/5.1/manual.html#pdf-math.randomseed">math.randomseed</a>.
+ Under the hood, this function calls <a href="https://www.lua.org/manual/5.1/manual.html#pdf-math.randomseed">math.randomseed</a>.
  It makes sure to use the most appropriate seeding technique for
  the current environment, guaranteeing a unique seed.</p>
 
 <p> To guarantee unique UUIDs, you must have correctly seeded
- the Lua pseudo-random generator (with <a href="http://www.lua.org/manual/5.1/manual.html#pdf-math.randomseed">math.randomseed</a>).
+ the Lua pseudo-random generator (with <a href="https://www.lua.org/manual/5.1/manual.html#pdf-math.randomseed">math.randomseed</a>).
  You are free to seed it any way you want, but this function
  can do it for you if you'd like, with some added guarantees.
 
@@ -117,15 +117,14 @@
 
     <h3>Usage:</h3>
     <ul>
-        <pre class="example">
- <span class="keyword">local</span> uuid = <span class="global">require</span> <span class="string">'resty.jit-uuid'</span>
- uuid.seed()
+        <pre class="example"><span class="keyword">local</span> uuid = <span class="global">require</span> <span class="string">'resty.jit-uuid'</span>
+uuid.seed()
 
- <span class="comment">-- in ngx_lua, seed in the init_worker context:
-</span> init_worker_by_lua {
-   <span class="keyword">local</span> uuid = <span class="global">require</span> <span class="string">'resty.jit-uuid'</span>
-   uuid.seed()
- }</pre>
+<span class="comment">-- in ngx_lua, seed in the init_worker context:
+</span>init_worker_by_lua {
+  <span class="keyword">local</span> uuid = <span class="global">require</span> <span class="string">'resty.jit-uuid'</span>
+  uuid.seed()
+}</pre>
     </ul>
 
 </dd>
@@ -146,7 +145,7 @@
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">str</span>
-            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
          String to verify.
         </li>
     </ul>
@@ -162,13 +161,12 @@
 
     <h3>Usage:</h3>
     <ul>
-        <pre class="example">
- <span class="keyword">local</span> uuid = <span class="global">require</span> <span class="string">'resty.jit-uuid'</span>
+        <pre class="example"><span class="keyword">local</span> uuid = <span class="global">require</span> <span class="string">'resty.jit-uuid'</span>
 
- uuid.is_valid <span class="string">'cbb297c0-a956-486d-ad1d-f9bZZZZZZZZZ'</span> <span class="comment">--&gt; false
-</span> uuid.is_valid <span class="string">'cbb297c0-a956-486d-dd1d-f9b42df9465a'</span> <span class="comment">--&gt; false (invalid variant)
-</span> uuid.is_valid <span class="string">'cbb297c0a956486dad1df9b42df9465a'</span>     <span class="comment">--&gt; false (no dashes)
-</span> uuid.is_valid <span class="string">'cbb297c0-a956-486d-ad1d-f9b42df9465a'</span> --&gt; <span class="keyword">true</span></pre>
+uuid.is_valid <span class="string">'cbb297c0-a956-486d-ad1d-f9bZZZZZZZZZ'</span> <span class="comment">--&gt; false
+</span>uuid.is_valid <span class="string">'cbb297c0-a956-486d-dd1d-f9b42df9465a'</span> <span class="comment">--&gt; false (invalid variant)
+</span>uuid.is_valid <span class="string">'cbb297c0a956486dad1df9b42df9465a'</span>     <span class="comment">--&gt; false (no dashes)
+</span>uuid.is_valid <span class="string">'cbb297c0-a956-486d-ad1d-f9b42df9465a'</span> <span class="comment">--&gt; true</span></pre>
     </ul>
 
 </dd>
@@ -185,7 +183,7 @@
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
         <code>uuid</code>: a v4 (randomly generated) UUID.
     </ol>
 
@@ -193,11 +191,10 @@
 
     <h3>Usage:</h3>
     <ul>
-        <pre class="example">
- <span class="keyword">local</span> uuid = <span class="global">require</span> <span class="string">'resty.jit-uuid'</span>
+        <pre class="example"><span class="keyword">local</span> uuid = <span class="global">require</span> <span class="string">'resty.jit-uuid'</span>
 
- <span class="keyword">local</span> u1 = uuid()             <span class="comment">---&gt; __call metamethod
-</span> <span class="keyword">local</span> u2 = uuid.generate_v4()</pre>
+<span class="keyword">local</span> u1 = uuid()             <span class="comment">---&gt; __call metamethod
+</span><span class="keyword">local</span> u2 = uuid.generate_v4()</pre>
     </ul>
 
 </dd>
@@ -212,7 +209,7 @@
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">namespace</span>
-            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
          (must be a valid UUID according to <a href="index.html#is_valid">is_valid</a>)
         </li>
     </ul>
@@ -223,7 +220,7 @@
            <span class="types"><span class="type">function</span></span>
         <code>factory</code>: a v3 UUID generator.</li>
         <li>
-           <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
         <code>err</code>: a string describing an error</li>
     </ol>
 
@@ -231,16 +228,15 @@
 
     <h3>Usage:</h3>
     <ul>
-        <pre class="example">
- <span class="keyword">local</span> uuid = <span class="global">require</span> <span class="string">'resty.jit-uuid'</span>
+        <pre class="example"><span class="keyword">local</span> uuid = <span class="global">require</span> <span class="string">'resty.jit-uuid'</span>
 
- <span class="keyword">local</span> fact = <span class="global">assert</span>(uuid.factory_v3(<span class="string">'e6ebd542-06ae-11e6-8e82-bba81706b27d'</span>))
+<span class="keyword">local</span> fact = <span class="global">assert</span>(uuid.factory_v3(<span class="string">'e6ebd542-06ae-11e6-8e82-bba81706b27d'</span>))
 
- <span class="keyword">local</span> u1 = fact(<span class="string">'hello'</span>)
- <span class="comment">---&gt; 3db7a435-8c56-359d-a563-1b69e6802c78
+<span class="keyword">local</span> u1 = fact(<span class="string">'hello'</span>)
+<span class="comment">---&gt; 3db7a435-8c56-359d-a563-1b69e6802c78
 </span>
- <span class="keyword">local</span> u2 = fact(<span class="string">'foobar'</span>)
- ---&gt; e8d3eeba-<span class="number">7723</span>-<span class="number">3</span>b72-bbc5-<span class="number">8</span>f598afa6773</pre>
+<span class="keyword">local</span> u2 = fact(<span class="string">'foobar'</span>)
+<span class="comment">---&gt; e8d3eeba-7723-3b72-bbc5-8f598afa6773</span></pre>
     </ul>
 
 </dd>
@@ -255,7 +251,7 @@
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">namespace</span>
-            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
          (must be a valid UUID according to <a href="index.html#is_valid">is_valid</a>)
         </li>
     </ul>
@@ -266,7 +262,7 @@
            <span class="types"><span class="type">function</span></span>
         <code>factory</code>: a v5 UUID generator.</li>
         <li>
-           <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
         <code>err</code>: a string describing an error</li>
     </ol>
 
@@ -274,16 +270,15 @@
 
     <h3>Usage:</h3>
     <ul>
-        <pre class="example">
- <span class="keyword">local</span> uuid = <span class="global">require</span> <span class="string">'resty.jit-uuid'</span>
+        <pre class="example"><span class="keyword">local</span> uuid = <span class="global">require</span> <span class="string">'resty.jit-uuid'</span>
 
- <span class="keyword">local</span> fact = <span class="global">assert</span>(uuid.factory_v5(<span class="string">'e6ebd542-06ae-11e6-8e82-bba81706b27d'</span>))
+<span class="keyword">local</span> fact = <span class="global">assert</span>(uuid.factory_v5(<span class="string">'e6ebd542-06ae-11e6-8e82-bba81706b27d'</span>))
 
- <span class="keyword">local</span> u1 = fact(<span class="string">'hello'</span>)
- <span class="comment">---&gt; 4850816f-1658-5890-8bfd-1ed14251f1f0
+<span class="keyword">local</span> u1 = fact(<span class="string">'hello'</span>)
+<span class="comment">---&gt; 4850816f-1658-5890-8bfd-1ed14251f1f0
 </span>
- <span class="keyword">local</span> u2 = fact(<span class="string">'foobar'</span>)
- ---&gt; c9be99fc-<span class="number">326</span>b-<span class="number">5066</span>-bdba-dcd31a6d01ab</pre>
+<span class="keyword">local</span> u2 = fact(<span class="string">'foobar'</span>)
+<span class="comment">---&gt; c9be99fc-326b-5066-bdba-dcd31a6d01ab</span></pre>
     </ul>
 
 </dd>
@@ -307,11 +302,11 @@
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">namespace</span>
-            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
          (must be a valid UUID according to <a href="index.html#is_valid">is_valid</a>)
         </li>
         <li><span class="parameter">name</span>
-            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
 
 
 
@@ -321,10 +316,10 @@
     <h3>Returns:</h3>
     <ol>
         <li>
-           <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
         <code>uuid</code>: a v3 (namespaced) UUID.</li>
         <li>
-           <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
         <code>err</code>: a string describing an error</li>
     </ol>
 
@@ -332,11 +327,10 @@
 
     <h3>Usage:</h3>
     <ul>
-        <pre class="example">
- <span class="keyword">local</span> uuid = <span class="global">require</span> <span class="string">'resty.jit-uuid'</span>
+        <pre class="example"><span class="keyword">local</span> uuid = <span class="global">require</span> <span class="string">'resty.jit-uuid'</span>
 
- <span class="keyword">local</span> u = uuid.generate_v3(<span class="string">'e6ebd542-06ae-11e6-8e82-bba81706b27d'</span>, <span class="string">'hello'</span>)
- ---&gt; <span class="number">3</span>db7a435-<span class="number">8</span>c56-<span class="number">359</span>d-a563-<span class="number">1</span>b69e6802c78</pre>
+<span class="keyword">local</span> u = uuid.generate_v3(<span class="string">'e6ebd542-06ae-11e6-8e82-bba81706b27d'</span>, <span class="string">'hello'</span>)
+<span class="comment">---&gt; 3db7a435-8c56-359d-a563-1b69e6802c78</span></pre>
     </ul>
 
 </dd>
@@ -360,11 +354,11 @@
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">namespace</span>
-            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
          (must be a valid UUID according to <a href="index.html#is_valid">is_valid</a>)
         </li>
         <li><span class="parameter">name</span>
-            <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
 
 
 
@@ -374,10 +368,10 @@
     <h3>Returns:</h3>
     <ol>
         <li>
-           <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
         <code>uuid</code>: a v5 (namespaced) UUID.</li>
         <li>
-           <span class="types"><a class="type" href="http://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
         <code>err</code>: a string describing an error</li>
     </ol>
 
@@ -385,11 +379,10 @@
 
     <h3>Usage:</h3>
     <ul>
-        <pre class="example">
- <span class="keyword">local</span> uuid = <span class="global">require</span> <span class="string">'resty.jit-uuid'</span>
+        <pre class="example"><span class="keyword">local</span> uuid = <span class="global">require</span> <span class="string">'resty.jit-uuid'</span>
 
- <span class="keyword">local</span> u = uuid.generate_v5(<span class="string">'e6ebd542-06ae-11e6-8e82-bba81706b27d'</span>, <span class="string">'hello'</span>)
- ---&gt; <span class="number">4850816</span>f-<span class="number">1658</span>-<span class="number">5890</span>-<span class="number">8</span>bfd-<span class="number">1</span>ed14251f1f0</pre>
+<span class="keyword">local</span> u = uuid.generate_v5(<span class="string">'e6ebd542-06ae-11e6-8e82-bba81706b27d'</span>, <span class="string">'hello'</span>)
+<span class="comment">---&gt; 4850816f-1658-5890-8bfd-1ed14251f1f0</span></pre>
     </ul>
 
 </dd>
@@ -399,8 +392,8 @@
 </div> <!-- id="content" -->
 </div> <!-- id="main" -->
 <div id="about">
-<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
-<i style="float:right;">Last updated 2016-05-09 10:26:07 </i>
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.5</a></i>
+<i style="float:right;">Last updated 2016-08-25 12:09:57 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
