@@ -27,6 +27,10 @@ local _M = {
 -- the Lua pseudo-random generator (with `math.randomseed`).
 -- You are free to seed it any way you want, but this function
 -- can do it for you if you'd like, with some added guarantees.
+--
+-- @param[type=number] seed (Optional) A seed to use. If none given, will
+-- generate one trying to use the most appropriate technique.
+-- @treturn number `seed`: the seed given to `math.randomseed`.
 -- @usage
 -- local uuid = require 'resty.jit-uuid'
 -- uuid.seed()
@@ -36,14 +40,18 @@ local _M = {
 --   local uuid = require 'resty.jit-uuid'
 --   uuid.seed()
 -- }
-function _M.seed()
-  if ngx then
-    math.randomseed(ngx.time() + ngx.worker.pid())
-  elseif package.loaded['socket'] and package.loaded['socket'].gettime then
-    math.randomseed(package.loaded['socket'].gettime()*10000)
-  else
-    math.randomseed(os.time())
+function _M.seed(seed)
+  if not seed then
+    if ngx then
+      seed = ngx.time() + ngx.worker.pid()
+    elseif package.loaded['socket'] and package.loaded['socket'].gettime then
+      seed = package.loaded['socket'].gettime()*10000
+    else
+      seed = os.time()
+    end
   end
+  math.randomseed(seed)
+  return seed
 end
 
 -------------

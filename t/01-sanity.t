@@ -1,4 +1,4 @@
-# vim:set ts=4 sw=4 et fdm=marker:
+# vi:ts=4 sw=4 et fdm=marker:
 use Test::Nginx::Socket::Lua;
 
 our $HttpConfig = <<_EOC_;
@@ -8,7 +8,7 @@ _EOC_
 master_on();
 workers(2);
 
-plan tests => repeat_each() * blocks() * 3;
+plan tests => repeat_each() * blocks() * 3 - 1;
 
 run_tests();
 
@@ -85,7 +85,28 @@ GET /t
 
 
 
-=== TEST 4: __call metamethod
+=== TEST 4: seed() uses custom seed and returns used value
+--- http_config eval
+qq{
+    $::HttpConfig
+}
+--- config
+    location /t {
+        content_by_lua_block {
+            local uuid = require 'resty.jit-uuid'
+            local seed = uuid.seed(1234)
+            ngx.say(seed)
+        }
+    }
+--- request
+GET /t
+--- response_body
+1234
+--- no_error_log
+
+
+
+=== TEST 5: __call metamethod
 --- http_config eval: $::HttpConfig
 --- config
     location /t {
