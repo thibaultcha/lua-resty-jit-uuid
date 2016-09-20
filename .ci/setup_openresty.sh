@@ -1,30 +1,31 @@
 set -e
 
-mkdir -p $OPENRESTY_DIR
+OPENRESTY_DOWNLOAD=$DOWNLOAD_CACHE/openresty-$OPENRESTY
 
-if [ ! "$(ls -A $OPENRESTY_DIR)" ]; then
+mkdir -p $OPENRESTY_DOWNLOAD
+
+if [ ! "$(ls -A $OPENRESTY_DOWNLOAD)" ]; then
   OPENRESTY_BASE=openresty-$OPENRESTY
+  pushd $DOWNLOAD_CACHE
+    curl -L https://openresty.org/download/openresty-$OPENRESTY.tar.gz | tar xz
+  popd
+fi
 
-  curl https://openresty.org/download/$OPENRESTY_BASE.tar.gz | tar xz
-  pushd $OPENRESTY_BASE
+OPENRESTY_INSTALL=$INSTALL_CACHE/openresty-$OPENRESTY
+
+mkdir -p $OPENRESTY_INSTALL
+
+if [ ! "$(ls -A $OPENRESTY_INSTALL)" ]; then
+  pushd $OPENRESTY_DOWNLOAD
     ./configure \
-      --prefix=$OPENRESTY_DIR \
-      --without-http_coolkit_module \
-      --without-lua_resty_dns \
-      --without-lua_resty_lrucache \
-      --without-lua_resty_upstream_healthcheck \
-      --without-lua_resty_websocket \
-      --without-lua_resty_upload \
-      --without-lua_resty_string \
-      --without-lua_resty_mysql \
-      --without-lua_resty_redis \
-      --without-http_redis_module \
-      --without-http_redis2_module \
-      --without-lua_redis_parser
+      --prefix=$OPENRESTY_INSTALL \
+      --with-pcre-jit
     make
     make install
   popd
 fi
+
+export PATH="$PATH:$OPENRESTY_INSTALL/nginx/sbin"
 
 git clone git://github.com/travis-perl/helpers travis-perl-helpers
 pushd travis-perl-helpers

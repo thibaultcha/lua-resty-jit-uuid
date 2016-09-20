@@ -6,20 +6,18 @@ notifications:
 addons:
   apt:
     packages:
-      - libreadline-dev
-      - libncurses5-dev
       - libpcre3-dev
-      - libssl-dev
       - build-essential
 env:
   global:
-    - OPENRESTY=1.9.7.4
-    - OPENRESTY_DIR=$HOME/openresty
+    - OPENRESTY=1.11.2.1
+    - DOWNLOAD_CACHE=$HOME/download-cache
+    - INSTALL_CACHE=$HOME/install-cache
 before_install:
-  - bash .ci/setup_openresty.sh
+  - source .ci/setup_openresty.sh
   - pip install --user hererocks
   - hererocks lua_install -r^ -l 5.1
-  - export PATH=$PATH:$PWD/lua_install/bin:$OPENRESTY_DIR/nginx/sbin
+  - export PATH=$PATH:$PWD/lua_install/bin
   - eval `luarocks path`
   - luarocks install luacheck
   - luarocks install luacov-coveralls
@@ -34,4 +32,5 @@ cache:
   apt: true
   pip: true
   directories:
-    - $OPENRESTY_DIR
+    - $DOWNLOAD_CACHE
+    - $INSTALL_CACHE
