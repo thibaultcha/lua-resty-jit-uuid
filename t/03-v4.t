@@ -1,9 +1,8 @@
 # vim:set ts=4 sw=4 et fdm=marker:
 use Test::Nginx::Socket::Lua;
+use t::Util;
 
-our $HttpConfig = <<_EOC_;
-    lua_package_path 'lib/?.lua;lib/?/init.lua;;';
-_EOC_
+our $HttpConfig = $t::Util::HttpConfig;
 
 master_on();
 

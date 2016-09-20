@@ -1,4 +1,4 @@
-.PHONY: test lint bench doc
+.PHONY: test lint bench doc coverage
 
 test:
 	@t/reindex t/*.t
@@ -17,3 +17,6 @@ bench:
 doc:
 	@luarocks install ldoc
 	@ldoc -c docs/config.ld lib
+
+coverage: test
+	@luacov -i lib/resty
