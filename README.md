@@ -2,6 +2,7 @@
 
 [![Module Version][badge-version-image]][luarocks-resty-jit-uuid]
 [![Build Status][badge-travis-image]][badge-travis-url]
+[![Coverage Status][badge-coveralls-image]][badge-coveralls-url]
 
 A pure LuaJIT (no dependencies) UUID library tuned for performance.
 
@@ -152,4 +153,8 @@ Work licensed under the MIT License.
 
 [badge-travis-url]: https://travis-ci.org/thibaultcha/lua-resty-jit-uuid
 [badge-travis-image]: https://travis-ci.org/thibaultcha/lua-resty-jit-uuid.svg?branch=master
+
+[badge-coveralls-url]: https://coveralls.io/r/thibaultcha/lua-resty-jit-uuid?branch=master
+[badge-coveralls-image]: https://coveralls.io/repos/thibaultcha/lua-resty-jit-uuid/badge.svg?branch=master&style=flat
+
 [badge-version-image]: https://img.shields.io/badge/version-0.0.5-blue.svg?style=flat

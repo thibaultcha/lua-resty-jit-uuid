@@ -22,9 +22,13 @@ before_install:
   - export PATH=$PATH:$PWD/lua_install/bin:$OPENRESTY_DIR/nginx/sbin
   - eval `luarocks path`
   - luarocks install luacheck
+  - luarocks install luacov-coveralls
 install:
   - luarocks make
-script: make lint && make test
+script:
+  - make lint
+  - make test
+  - luacov-coveralls -i lib/resty
 cache:
   cpan: true
   apt: true
