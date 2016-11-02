@@ -1,18 +1,24 @@
 language: perl
+
 perl: 5.18
+
 sudo: false
+
 notifications:
   email: false
+
 addons:
   apt:
     packages:
       - libpcre3-dev
       - build-essential
+
 env:
   global:
     - OPENRESTY=1.11.2.1
     - DOWNLOAD_CACHE=$HOME/download-cache
     - INSTALL_CACHE=$HOME/install-cache
+
 before_install:
   - source .ci/setup_openresty.sh
   - pip install --user hererocks
@@ -21,12 +27,15 @@ before_install:
   - eval `luarocks path`
   - luarocks install luacheck
   - luarocks install luacov-coveralls
+
 install:
   - luarocks make
+
 script:
   - make lint
-  - make test
+  - make coverage
   - luacov-coveralls -i lib/resty
+
 cache:
   cpan: true
   apt: true
