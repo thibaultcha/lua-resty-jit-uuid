@@ -84,6 +84,11 @@ This module can be installed through Luarocks:
 $ luarocks install lua-resty-jit-uuid
 ```
 
+Or via [opm](https://github.com/openresty/opm):
+```bash
+$ opm get thibaultcha/lua-resty-jit-uuid
+```
+
 Or can be manually copied in your `LUA_PATH`.
 
 [Back to TOC](#table-of-contents)
