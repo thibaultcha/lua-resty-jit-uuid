@@ -1,7 +1,7 @@
 package = "lua-resty-jit-uuid"
 version = "0.0.5-1"
 source = {
-  url = "git://github.com/thibaultCha/lua-resty-jit-uuid",
+  url = "git://github.com/thibaultcha/lua-resty-jit-uuid",
   tag = "0.0.5"
 }
 description = {
