@@ -149,7 +149,7 @@ do
     -- local u1 = uuid()             ---> __call metamethod
     -- local u2 = uuid.generate_v4()
     function _M.generate_v4()
-        return fmt('%s%s%s%s-%s%s-%s%s-%s%s-%s%s%s%s%s%s',
+        return (fmt('%s%s%s%s-%s%s-%s%s-%s%s-%s%s%s%s%s%s',
                     tohex(random(0, 255), 2),
                     tohex(random(0, 255), 2),
                     tohex(random(0, 255), 2),
@@ -169,7 +169,7 @@ do
                     tohex(random(0, 255), 2),
                     tohex(random(0, 255), 2),
                     tohex(random(0, 255), 2),
-                    tohex(random(0, 255), 2))
+                    tohex(random(0, 255), 2)))
     end
 end
 
@@ -282,13 +282,13 @@ do
 
                 local hash, ver, var = hash_fn(concat(buf, ''), name)
 
-                return fmt('%s-%s-%s%s-%s%s-%s', sub(hash, 1, 8),
+                return (fmt('%s-%s-%s%s-%s%s-%s', sub(hash, 1, 8),
                                                 sub(hash, 9, 12),
                                                 ver,
                                                 sub(hash, 15, 16),
                                                 var,
                                                 sub(hash, 19, 20),
-                                                sub(hash, 21, 32))
+                                                sub(hash, 21, 32)))
             end
         end
 
