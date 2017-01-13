@@ -15,7 +15,7 @@ addons:
 
 env:
   global:
-    - OPENRESTY=1.11.2.1
+    - OPENRESTY=1.11.2.2
     - DOWNLOAD_CACHE=$HOME/download-cache
     - INSTALL_CACHE=$HOME/install-cache
 
