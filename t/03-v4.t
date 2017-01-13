@@ -6,7 +6,7 @@ our $HttpConfig = $t::Util::HttpConfig;
 
 master_on();
 
-plan tests => repeat_each() * blocks() * 3;
+plan tests => repeat_each() * blocks() * 3 + 2;
 
 run_tests();
 
@@ -51,3 +51,6 @@ GET /t
 
 --- error_log eval
 qr/\[TRACE   \d+ content_by_lua\(nginx\.conf:\d+\):4 loop\]/
+--- no_error_log
+[error]
+-- NYI:
