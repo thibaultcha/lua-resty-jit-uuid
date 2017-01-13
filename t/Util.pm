@@ -17,15 +17,15 @@ _EOC_
 }
 
 our $HttpConfig = <<_EOC_;
-    lua_package_path \'./lib/?.lua;./lib/?/init.lua;;\';
+    lua_package_path './lib/?.lua;./lib/?/init.lua;;';
 
     init_by_lua_block {
       $LuaCovRunner
     }
 _EOC_
 
-our $HttpConfigJit = <<"_EOC_";
-    lua_package_path \'./lib/?.lua;./lib/?/init.lua;;\';
+our $HttpConfigJit = <<_EOC_;
+    lua_package_path './lib/?.lua;./lib/?/init.lua;;';
 
     init_by_lua_block {
         local verbose = false
