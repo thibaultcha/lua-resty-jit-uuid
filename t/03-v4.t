@@ -1,4 +1,4 @@
-# vim:set ts=4 sw=4 et fdm=marker:
+# vim:set sts=4 ts=4 sw=4 et fdm=marker:
 use Test::Nginx::Socket::Lua;
 use t::Util;
 
@@ -30,3 +30,24 @@ GET /t
 ^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
 --- no_error_log
 [error]
+
+
+
+=== TEST 2: generate_v4() JIT compiles
+--- http_config eval: $t::Util::HttpConfigJit
+--- config
+    location /t {
+        content_by_lua_block {
+            local uuid = require 'resty.jit-uuid'
+
+            for _ = 1, 100 do
+                uuid()
+            end
+        }
+    }
+--- request
+GET /t
+--- response_body
+
+--- error_log eval
+qr/\[TRACE   \d+ content_by_lua\(nginx\.conf:\d+\):4 loop\]/

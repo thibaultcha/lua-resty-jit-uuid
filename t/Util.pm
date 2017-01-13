@@ -24,4 +24,23 @@ our $HttpConfig = <<_EOC_;
     }
 _EOC_
 
+our $HttpConfigJit = <<"_EOC_";
+    lua_package_path \'./lib/?.lua;./lib/?/init.lua;;\';
+
+    init_by_lua_block {
+        local verbose = false
+
+        if verbose then
+            local dump = require "jit.dump"
+            dump.on(nil, "$Test::Nginx::Util::ErrLogFile")
+
+        else
+            local v = require "jit.v"
+            v.on("$Test::Nginx::Util::ErrLogFile")
+        end
+
+        require "resty.core"
+    }
+_EOC_
+
 1;

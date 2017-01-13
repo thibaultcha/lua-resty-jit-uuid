@@ -1,4 +1,4 @@
--- vim:set ts=4 sw=4 et:
+-- vim:set ts=4 sts=4 sw=4 et:
 
 --- jit-uuid
 -- Fast and dependency-free UUID library for LuaJIT/ngx_lua.
@@ -181,15 +181,71 @@ end
 
 do
     if ngx then
+        local ffi = require 'ffi'
+
+
         local tonumber = tonumber
         local assert   = assert
+        local error    = error
         local concat   = table.concat
-        local gmatch   = string.gmatch
         local type     = type
         local char     = string.char
         local fmt      = string.format
         local sub      = string.sub
-        local buf      = {}
+        local gmatch   = ngx.re.gmatch
+        local sha1_bin = ngx.sha1_bin
+        local md5      = ngx.md5
+        local C        = ffi.C
+        local ffi_new  = ffi.new
+        local ffi_str  = ffi.string
+        local ffi_cast = ffi.cast
+        local new_tab
+        do
+            local ok
+            ok, new_tab = pcall(require, 'table.new')
+            if not ok then
+                new_tab = function(narr, nrec) return {} end
+            end
+        end
+
+
+        ffi.cdef [[
+            typedef unsigned char u_char;
+            typedef intptr_t ngx_int_t;
+
+            u_char * ngx_hex_dump(u_char *dst, const u_char *src, size_t len);
+            ngx_int_t ngx_hextoi(u_char *line, size_t n);
+        ]]
+
+
+        local str_type    = ffi.typeof('uint8_t[?]')
+        local u_char_type = ffi.typeof('u_char *')
+
+
+        local function bin_tohex(s)
+            local slen = #s
+            local blen = #s * 2
+            local buf = ffi_new(str_type, blen)
+
+            C.ngx_hex_dump(buf, s, slen)
+
+            return ffi_str(buf, blen)
+        end
+
+
+        local function hex_to_i(s)
+            local buf = ffi_cast(u_char_type, s)
+
+            local n = tonumber(C.ngx_hextoi(buf, #s))
+            if n == -1 then
+                error("could not convert hex to number")
+            end
+
+            return n
+        end
+
+
+        local buf = new_tab(16, 0)
 
 
         local function factory(namespace, hash_fn)
@@ -198,16 +254,23 @@ do
             end
 
             local i = 0
-            local iter = gmatch(namespace, '([%a%d][%a%d])') -- pattern faster than PCRE without resty.core
+            local iter, err = gmatch(namespace, [[([\da-f][\da-f])]])
+            if not iter then
+                return nil, 'could not create iter: ' .. err
+            end
 
             while true do
-                local m = iter()
+                local m, err = iter()
+                if err then
+                    return nil, err
+                end
+
                 if not m then
                     break
                 end
 
                 i = i + 1
-                buf[i] = char(tonumber(m, 16))
+                buf[i] = char(tonumber(m[0], 16))
             end
 
             assert(i == 16, "invalid binary namespace buffer length")
@@ -230,6 +293,24 @@ do
         end
 
 
+        local function v3_hash(binary, name)
+            local hash = md5(binary .. name)
+
+            return hash,
+            tohex(bor(band(hex_to_i(sub(hash, 13, 14)), 0x0F), 0x30), 2),
+            tohex(bor(band(hex_to_i(sub(hash, 17, 18)), 0x3F), 0x80), 2)
+        end
+
+
+        local function v5_hash(binary, name)
+            local hash = bin_tohex(sha1_bin(binary .. name))
+
+            return hash,
+            tohex(bor(band(hex_to_i(sub(hash, 13, 14)), 0x0F), 0x50), 2),
+            tohex(bor(band(hex_to_i(sub(hash, 17, 18)), 0x3F), 0x80), 2)
+        end
+
+
         --- Instanciate a v3 UUID factory.
         -- @function factory_v3
         -- Creates a closure generating namespaced v3 UUIDs.
@@ -246,21 +327,8 @@ do
         --
         -- local u2 = fact('foobar')
         -- ---> e8d3eeba-7723-3b72-bbc5-8f598afa6773
-        do
-            local md5 = ngx.md5
-
-
-            local function v3_hash(binary, name)
-                local hash = md5(binary .. name)
-                return hash,
-                        tohex(bor(band(tonumber(sub(hash, 13, 14), 16), 0x0F), 0x30), 2),
-                        tohex(bor(band(tonumber(sub(hash, 17, 18), 16), 0x3F), 0x80), 2)
-            end
-
-
-            function _M.factory_v3(namespace)
-                return factory(namespace, v3_hash)
-            end
+        function _M.factory_v3(namespace)
+            return factory(namespace, v3_hash)
         end
 
 
@@ -280,42 +348,8 @@ do
         --
         -- local u2 = fact('foobar')
         -- ---> c9be99fc-326b-5066-bdba-dcd31a6d01ab
-        do
-            local ffi = require 'ffi'
-
-
-            local sha1_bin = ngx.sha1_bin
-            local C        = ffi.C
-            local ffi_new  = ffi.new
-            local ffi_str  = ffi.string
-            local str_type = ffi.typeof('uint8_t[?]')
-
-            ffi.cdef [[
-                typedef unsigned char u_char;
-                u_char * ngx_hex_dump(u_char *dst, const u_char *src, size_t len);
-            ]]
-
-
-            local function bin_tohex(s)
-                local len = #s * 2
-                local buf = ffi_new(str_type, len)
-                C.ngx_hex_dump(buf, s, #s)
-
-                return ffi_str(buf, len)
-            end
-
-
-            local function v5_hash(binary, name)
-                local hash = bin_tohex(sha1_bin(binary .. name))
-                return hash,
-                        tohex(bor(band(tonumber(sub(hash, 13, 14), 16), 0x0F), 0x50), 2),
-                        tohex(bor(band(tonumber(sub(hash, 17, 18), 16), 0x3F), 0x80), 2)
-            end
-
-
-            function _M.factory_v5(namespace)
-                return factory(namespace, v5_hash)
-            end
+        function _M.factory_v5(namespace)
+            return factory(namespace, v5_hash)
         end
 
 
