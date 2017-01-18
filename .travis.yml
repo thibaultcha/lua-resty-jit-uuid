@@ -26,6 +26,7 @@ before_install:
   - source .ci/setup_openresty.sh
   - luarocks install luacheck
   - luarocks install luacov-coveralls
+  - luarocks install Lua-cURL
 
 install:
   - luarocks make
