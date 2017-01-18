@@ -1,8 +1,8 @@
 package = "lua-resty-jit-uuid"
-version = "0.0.5-1"
+version = "0.0.6-1"
 source = {
   url = "git://github.com/thibaultcha/lua-resty-jit-uuid",
-  tag = "0.0.5"
+  tag = "0.0.6"
 }
 description = {
   summary = "Fast and dependency-free uuid generation for OpenResty/LuaJIT",

@@ -5,7 +5,7 @@
 -- @module jit-uuid
 -- @author Thibault Charbonnier
 -- @license MIT
--- @release 0.0.5
+-- @release 0.0.6
 
 
 local bit = require 'bit'
@@ -17,7 +17,7 @@ local bor = bit.bor
 
 
 local _M = {
-    _VERSION = '0.0.5'
+    _VERSION = '0.0.6'
 }
 
 
