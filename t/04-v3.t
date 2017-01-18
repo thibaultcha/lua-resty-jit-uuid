@@ -1,4 +1,4 @@
-# vim:set ts=4 sw=4 et fdm=marker:
+# vim:set sts=4 ts=4 sw=4 et fdm=marker:
 use Test::Nginx::Socket::Lua;
 use t::Util;
 
@@ -6,7 +6,7 @@ our $HttpConfig = $t::Util::HttpConfig;
 
 master_on();
 
-plan tests => repeat_each() * blocks() * 3 - 2;
+plan tests => repeat_each() * blocks() * 3 - 2 + 2;
 
 run_tests();
 
@@ -173,3 +173,28 @@ name must be a string
 --- no_error_log
 [error]
 
+
+
+=== TEST 8: generate_v3() JIT compiles with resty.core
+--- http_config eval: $t::Util::HttpConfigJit
+--- config
+    location /t {
+        content_by_lua_block {
+            local uuid = require 'resty.jit-uuid'
+
+            local factory = uuid.factory_v3('cbb297c0-a956-486d-ad1d-f9b42df9465a')
+
+            for _ = 1, 100 do
+                factory('hello')
+            end
+        }
+    }
+--- request
+GET /t
+--- response_body
+
+--- error_log eval
+qr/\[TRACE   \d+ content_by_lua\(nginx\.conf:\d+\):6 loop\]/
+--- no_error_log
+[error]
+-- NYI:

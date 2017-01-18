@@ -1,4 +1,4 @@
-# vim:set ts=4 sw=4 et fdm=marker:
+# vim:set sts=4 ts=4 sw=4 et fdm=marker:
 use Test::Nginx::Socket::Lua;
 use t::Util;
 
@@ -6,7 +6,7 @@ our $HttpConfig = $t::Util::HttpConfig;
 
 master_on();
 
-plan tests => repeat_each() * blocks() * 3;
+plan tests => repeat_each() * blocks() * 3 + 4;
 
 run_tests();
 
@@ -124,3 +124,50 @@ false
 --- no_error_log
 [error]
 
+
+
+=== TEST 3: is_valid() JIT compiles with invalid
+--- http_config eval: $t::Util::HttpConfigJit
+--- config
+    location /t {
+        content_by_lua_block {
+            local uuid = require 'resty.jit-uuid'
+
+            for _ = 1, 100 do
+                uuid.is_valid("")
+            end
+        }
+    }
+--- request
+GET /t
+--- response_body
+
+--- error_log eval
+qr/\[TRACE   \d+ content_by_lua\(nginx\.conf:\d+\):4 loop\]/
+--- no_error_log
+[error]
+-- NYI:
+
+
+
+=== TEST 4: is_valid() JIT compiles with valid
+--- http_config eval: $t::Util::HttpConfigJit
+--- config
+    location /t {
+        content_by_lua_block {
+            local uuid = require 'resty.jit-uuid'
+
+            for _ = 1, 100 do
+                uuid.is_valid("cbb297c0-a956-486d-ad1d-f9b42df9465a")
+            end
+        }
+    }
+--- request
+GET /t
+--- response_body
+
+--- error_log eval
+qr/\[TRACE   \d+ content_by_lua\(nginx\.conf:\d+\):4 loop\]/
+--- no_error_log
+[error]
+-- NYI:

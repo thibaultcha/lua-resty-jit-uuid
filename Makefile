@@ -6,6 +6,7 @@ test:
 
 lint:
 	@luacheck -q lib --std 'luajit+ngx_lua' \
+	  --no-unused-args \
 	  --no-redefined
 
 bench:

@@ -1,4 +1,4 @@
-# vi:ts=4 sw=4 et fdm=marker:
+# vi: sts=4 ts=4 sw=4 et fdm=marker:
 use Test::Nginx::Socket::Lua;
 use t::Util;
 
