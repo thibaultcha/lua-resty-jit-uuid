@@ -224,7 +224,7 @@ do
 
         local function bin_tohex(s)
             local slen = #s
-            local blen = #s * 2
+            local blen = slen * 2
             local buf = ffi_new(str_type, blen)
 
             C.ngx_hex_dump(buf, s, slen)
