@@ -168,4 +168,4 @@ Work licensed under the MIT License.
 [badge-coveralls-url]: https://coveralls.io/r/thibaultcha/lua-resty-jit-uuid?branch=master
 [badge-coveralls-image]: https://coveralls.io/repos/thibaultcha/lua-resty-jit-uuid/badge.svg?branch=master&style=flat
 
-[badge-version-image]: https://img.shields.io/badge/version-0.0.6-blue.svg?style=flat
+[badge-version-image]: https://img.shields.io/badge/version-0.0.7-blue.svg?style=flat
