@@ -274,13 +274,14 @@ do
             end
 
             assert(i == 16, "invalid binary namespace buffer length")
+            local ns = concat(buf)
 
             return function(name)
                 if type(name) ~= 'string' then
                     return nil, 'name must be a string'
                 end
 
-                local hash, ver, var = hash_fn(concat(buf, ''), name)
+                local hash, ver, var = hash_fn(ns, name)
 
                 return (fmt('%s-%s-%s%s-%s%s-%s', sub(hash, 1, 8),
                                                 sub(hash, 9, 12),
