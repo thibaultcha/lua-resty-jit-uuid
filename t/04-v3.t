@@ -198,3 +198,27 @@ qr/\[TRACE   \d+ content_by_lua\(nginx\.conf:\d+\):6 loop\]/
 --- no_error_log
 [error]
 -- NYI:
+
+
+
+=== TEST 9: generated UUID from each factory should be independent
+--- http_config eval: $::HttpConfig
+--- config
+    location /t {
+        content_by_lua_block {
+            local uuid = require 'resty.jit-uuid'
+
+            local factory = uuid.factory_v3('1b985f4a-06be-11e6-aff4-ff8d14e25128')
+            ngx.say(factory('hello'))
+
+            uuid.factory_v3('e6ebd542-06ae-11e6-8e82-bba81706b27d')
+            ngx.say(factory('hello'))
+        }
+    }
+--- request
+GET /t
+--- response_body
+5dcd9919-b318-3ef8-bfb1-c81f44c72084
+5dcd9919-b318-3ef8-bfb1-c81f44c72084
+--- no_error_log
+[error]
