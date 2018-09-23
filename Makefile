@@ -2,7 +2,7 @@
 
 test:
 	@t/reindex t/*.t
-	@prove
+	@prove -I.
 
 lint:
 	@luacheck -q lib --std 'luajit+ngx_lua' \
