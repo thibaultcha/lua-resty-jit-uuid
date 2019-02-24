@@ -14,6 +14,7 @@ local bit = require 'bit'
 local tohex = bit.tohex
 local band = bit.band
 local bor = bit.bor
+local rshift = bit.rshift
 
 
 local _M = {
@@ -149,27 +150,32 @@ do
     -- local u1 = uuid()             ---> __call metamethod
     -- local u2 = uuid.generate_v4()
     function _M.generate_v4()
+        local n1 = random(4294967295)
+        local n2 = random(4294967295)
+        local n3 = random(4294967295)
+        local n4 = random(4294967295)
+
         return (fmt('%s%s%s%s-%s%s-%s%s-%s%s-%s%s%s%s%s%s',
-                    tohex(random(0, 255), 2),
-                    tohex(random(0, 255), 2),
-                    tohex(random(0, 255), 2),
-                    tohex(random(0, 255), 2),
+                    tohex(band(n1, 0x000000FF), 2),
+                    tohex(rshift(band(n1, 0x0000FF00), 8), 2),
+                    tohex(rshift(band(n1, 0x00FF0000), 16), 2),
+                    tohex(rshift(band(n1, 0xFF000000), 24), 2),
 
-                    tohex(random(0, 255), 2),
-                    tohex(random(0, 255), 2),
+                    tohex(band(n2, 0x000000FF), 2),
+                    tohex(rshift(band(n2, 0x0000FF00), 8), 2),
 
-                    tohex(bor(band(random(0, 255), 0x0F), 0x40), 2),
-                    tohex(random(0, 255), 2),
+                    tohex(bor(band(rshift(band(n2, 0x00FF0000), 16), 0x0F), 0x40), 2),
+                    tohex(rshift(band(n2, 0xFF000000), 24), 2),
 
-                    tohex(bor(band(random(0, 255), 0x3F), 0x80), 2),
-                    tohex(random(0, 255), 2),
+                    tohex(bor(band(band(n3, 0x000000FF), 0x3F), 0x80), 2),
+                    tohex(rshift(band(n3, 0x0000FF00), 8), 2),
 
-                    tohex(random(0, 255), 2),
-                    tohex(random(0, 255), 2),
-                    tohex(random(0, 255), 2),
-                    tohex(random(0, 255), 2),
-                    tohex(random(0, 255), 2),
-                    tohex(random(0, 255), 2)))
+                    tohex(rshift(band(n3, 0x00FF0000), 16), 2),
+                    tohex(rshift(band(n3, 0xFF000000), 24), 2),
+                    tohex(band(n4, 0x000000FF), 2),
+                    tohex(rshift(band(n4, 0x0000FF00), 8), 2),
+                    tohex(rshift(band(n4, 0x00FF0000), 16), 2),
+                    tohex(rshift(band(n4, 0xFF000000), 24), 2)))
     end
 end
 
