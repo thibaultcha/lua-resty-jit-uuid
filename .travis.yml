@@ -17,7 +17,7 @@ addons:
 
 env:
   global:
-    - OPENRESTY=1.11.2.2
+    - OPENRESTY=1.15.8.1
     - LUAROCKS=2.4.2
     - DOWNLOAD_CACHE=$HOME/download-cache
     - INSTALL_CACHE=$HOME/install-cache
