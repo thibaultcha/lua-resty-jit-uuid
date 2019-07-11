@@ -1,4 +1,5 @@
-# vi: sts=4 ts=4 sw=4 et fdm=marker:
+# vim:sts=4 ts=4 sw=4 et fdm=marker:
+use lib '.';
 use Test::Nginx::Socket::Lua;
 use t::Util;
 
