@@ -18,7 +18,7 @@ addons:
 env:
   global:
     - OPENRESTY=1.15.8.2
-    - LUAROCKS=3.1.2
+    - LUAROCKS=3.2.1
     - DOWNLOAD_CACHE=$HOME/download-cache
     - INSTALL_CACHE=$HOME/install-cache
     - TEST_NGINX_TIMEOUT=6
