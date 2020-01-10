@@ -1,46 +1,59 @@
 # vim:set sts=2 ts=2 sw=2 et:
 
-language: perl
-
-perl: 5.18
-
+os: linux
+dist: xenial
 sudo: false
+
+language: c
 
 notifications:
   email: false
 
-addons:
-  apt:
-    packages:
-      - libpcre3-dev
-      - build-essential
+cache:
+  directories:
+  - download-cache
+  - perl5
 
 env:
   global:
-    - OPENRESTY=1.15.8.2
+    - JOBS=2
     - LUAROCKS=3.2.1
-    - DOWNLOAD_CACHE=$HOME/download-cache
-    - INSTALL_CACHE=$HOME/install-cache
     - TEST_NGINX_TIMEOUT=6
+  matrix:
+    - OPENRESTY=1.15.8.2
 
 before_install:
-  - source .ci/setup_openresty.sh
+  - mkdir -p download-cache
+  - if [ ! -f download-cache/openresty-$OPENRESTY.tar.gz ]; then wget -O download-cache/openresty-$OPENRESTY.tar.gz https://openresty.org/download/openresty-$OPENRESTY.tar.gz; fi
+  - if [ ! -f download-cache/luarocks-$LUAROCKS.tar.gz ]; then wget -O download-cache/luarocks-$LUAROCKS.tar.gz https://luarocks.github.io/luarocks/releases/luarocks-$LUAROCKS.tar.gz; fi
+  - if [ ! -f download-cache/cpanm ]; then wget -O download-cache/cpanm https://cpanmin.us/; fi
+  - tar -zxf download-cache/openresty-$OPENRESTY.tar.gz
+  - tar -zxf download-cache/luarocks-$LUAROCKS.tar.gz
+
+install:
+  - chmod +x download-cache/cpanm
+  - download-cache/cpanm --notest Test::Nginx >build.log 2>&1 || (cat build.log && exit 1)
+  - download-cache/cpanm --notest --local-lib=$TRAVIS_BUILD_DIR/perl5 local::lib && eval $(perl -I $TRAVIS_BUILD_DIR/perl5/lib/perl5/ -Mlocal::lib)
+  - pushd openresty-$OPENRESTY
+  - export OPENRESTY_PREFIX=$TRAVIS_BUILD_DIR/openresty-$OPENRESTY
+  - ./configure --prefix=$OPENRESTY_PREFIX --without-http_ssl_module --with-pcre-jit -j$JOBS >build.log 2>&1 || (cat build.log && exit 1)
+  - make -j$JOBS >build.log 2>&1 || (cat build.log && exit 1)
+  - make install >build.log 2>&1 || (cat build.log && exit 1)
+  - popd
+  - pushd luarocks-$LUAROCKS
+  - export LUAROCKS_PREFIX=$TRAVIS_BUILD_DIR/luarocks-$LUAROCKS
+  - ./configure --prefix=$LUAROCKS_PREFIX --with-lua=$OPENRESTY_PREFIX/luajit --with-lua-include=$OPENRESTY_PREFIX/luajit/include/luajit-2.1 --lua-suffix=jit >build.log 2>&1 || (cat build.log && exit 1)
+  - make build >build.log 2>&1 || (cat build.log && exit 1)
+  - make install >build.log 2>&1 || (cat build.log && exit 1)
+  - popd
+  - export PATH=$OPENRESTY_PREFIX/nginx/sbin:$LUAROCKS_PREFIX/bin:$PATH
+  - eval `luarocks path`
   - luarocks install luacheck
   - luarocks install luacov-coveralls
   - luarocks install Lua-cURL
-
-install:
-  - luarocks make
+  - nginx -V
 
 script:
   - make lint
   - make coverage
   - luacov-coveralls -v -i lib/resty
-
-cache:
-  cpan: true
-  apt: true
-  pip: true
-  directories:
-    - $DOWNLOAD_CACHE
-    - $INSTALL_CACHE
