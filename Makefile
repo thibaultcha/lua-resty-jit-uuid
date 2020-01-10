@@ -21,4 +21,4 @@ doc:
 
 coverage:
 	@TEST_COVERAGE_ENABLED=1 prove
-	@luacov -i lib/resty
+	@luacov ./lib

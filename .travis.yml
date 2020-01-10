@@ -56,4 +56,4 @@ install:
 script:
   - make lint
   - make coverage
-  - luacov-coveralls -v -i lib/resty
+  - luacov-coveralls -v -i %./lib
